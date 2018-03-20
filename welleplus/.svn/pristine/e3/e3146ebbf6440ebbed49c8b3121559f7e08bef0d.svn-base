@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.AppTwoOnceDao">
+
+	<select id="gettwoCountBy0" resultType="long" parameterType="map">
+		select
+		count(*)
+		from
+		(select
+		*
+		from
+		t_user
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (t_user.name = #{npe} or phonenumber=#{npe}
+				or
+				equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and equiptype=#{equiptype}
+			</if>
+			and equipnumber is not null
+		</trim>
+		) as B,
+		((select
+		*
+		from
+		app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		)
+		<!-- union all (select -->
+		<!-- * -->
+		<!-- from app_attendance -->
+		<!-- <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+		<!-- <if test="start != null and start != ''"> -->
+		<!-- AND app_month &gt;= #{start} -->
+		<!-- </if> -->
+		<!-- <if test="end != null and end != ''"> -->
+		<!-- AND app_month &lt;= #{end} -->
+		<!-- </if> -->
+		<!-- </trim> -->
+		<!-- ) -->
+		)
+		As A
+		where
+		A.phonenumber=B.phonenumber
+		limit ${(page*10)},10
+	</select>
+	<!-- //数据二未选中树 -->
+	<!-- public List<Map<String, Object>> gettwolists(Map<String, Object> map); -->
+	<select id="gettwolists" resultType="map" parameterType="map">
+		select
+		A.App_Month,B.name,A.phonenumber,(case B.worktype when '0' then
+		'其它' when '1' then '农民工' when '2' then '安全人员'
+		when '3' then '管理人员'
+		end)
+		as
+		worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from
+		(select
+		*
+		from
+		t_user
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (t_user.name = #{npe} or phonenumber=#{npe}
+				or
+				equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and equiptype=#{equiptype}
+			</if>
+			and equipnumber is not null
+		</trim>
+		) as B,
+		((select
+		*
+		from
+		t_phonelocation
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		)
+		<!-- union all (select -->
+		<!-- * -->
+		<!-- from app_attendance -->
+		<!-- <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+		<!-- <if test="start != null and start != ''"> -->
+		<!-- AND app_month &gt;= #{start} -->
+		<!-- </if> -->
+		<!-- <if test="end != null and end != ''"> -->
+		<!-- AND app_month &lt;= #{end} -->
+		<!-- </if> -->
+		<!-- </trim> -->
+		<!-- ) -->
+		)
+		As A
+		where
+		A.phonenumber=B.phonenumber
+		limit ${(page*10)},10
+	</select>
+
+
+	<!-- getAttendanceListBytree -->
+	<select id="getAttendanceListBytree" resultType="map"
+		parameterType="map">
+		select
+		A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from
+		(select u.name,u.worktype,u.phonenumber,u.equipnumber,u.equiptype
+		from
+		(
+		<if test="desc ==1">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm where
+			t_firm.id=#{descId} and t_user.rid=t_firm.id
+			and t_user.role=1 and equipnumber is not
+			null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_user.rid=t_company.id and t_user.role=2
+			and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section,t_project where
+			t_firm.id=#{descId} and t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_project.sid=t_section.id and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==2">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company where
+			t_company.id=#{descId} and
+			t_user.rid=t_company.id and
+			t_user.role=2 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_company.id=#{descId} and
+			t_section.cid=t_company.id and t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_company.id=#{descId} and t_section.cid=t_company.id and
+			t_project.sid=t_section.id and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==3">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_section.id=#{descId} and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_section.id=#{descId} and
+			t_project.sid=t_section.id and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==4">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_project.id=#{descId} and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		)as u
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (u.name = #{npe} or u.phonenumber=#{npe}
+				or
+				u.equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and u.worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and u.equiptype=#{equiptype}
+			</if>
+		</trim>
+		) as B,
+		((select
+		*
+		from
+		app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		)
+		<!-- union all (select phonenumber,Xloc,Yloc,DATE_FORMAT(realtime,'%Y-%m-%d 
+			%H:%i:%s') as realtime,address,null as bat from t_phonelocation -->
+		<!-- <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+		<!-- <if test="start != null and start != ''"> -->
+		<!-- AND app_month &gt;= #{start} -->
+		<!-- </if> -->
+		<!-- <if test="end != null and end != ''"> -->
+		<!-- AND app_month &lt;= #{end} -->
+		<!-- </if> -->
+		<!-- </trim>) -->
+		) As A
+		where
+		A.phonenumber=B.phonenumber
+		limit ${(page*10)},10
+	</select>
+	<!-- getAttendanceCountBytree -->
+	<select id="getAttendanceCountBytree" resultType="long"
+		parameterType="map">
+		select
+		count(*)
+		from
+		(select
+		u.name,u.worktype,u.phonenumber,u.equipnumber,u.equiptype
+		from
+		(
+		<if test="desc ==1">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm where
+			t_firm.id=#{descId} and t_user.rid=t_firm.id
+			and t_user.role=1 and equipnumber is not
+			null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_user.rid=t_company.id and t_user.role=2
+			and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section,t_project where
+			t_firm.id=#{descId} and t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_project.sid=t_section.id and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==2">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company where
+			t_company.id=#{descId} and
+			t_user.rid=t_company.id and
+			t_user.role=2 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_company.id=#{descId} and
+			t_section.cid=t_company.id and t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_company.id=#{descId} and t_section.cid=t_company.id and
+			t_project.sid=t_section.id and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==3">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_section.id=#{descId} and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_section.id=#{descId} and
+			t_project.sid=t_section.id and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==4">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_project.id=#{descId} and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		)as u
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (u.name = #{npe} or u.phonenumber=#{npe}
+				or
+				u.equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and u.worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and u.equiptype=#{equiptype}
+			</if>
+		</trim>
+		) as B,
+		((select
+		*
+		from
+		app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		)
+		<!-- union all (select phonenumber,Xloc,Yloc,DATE_FORMAT(realtime,'%Y-%m-%d 
+			%H:%i:%s') as realtime,address,null as bat from t_phonelocation -->
+		<!-- <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+		<!-- <if test="start != null and start != ''"> -->
+		<!-- AND app_month &gt;= #{start} -->
+		<!-- </if> -->
+		<!-- <if test="end != null and end != ''"> -->
+		<!-- AND app_month &lt;= #{end} -->
+		<!-- </if> -->
+		<!-- </trim>) -->
+		) As A
+		where
+		A.phonenumber=B.phonenumber
+		limit ${(page*10)},10
+	</select>
+	<select id="getrootdataone" resultType="String">
+		select distinct
+		CASE
+		equiptype
+		WHEN 0 THEN "手表定位"
+		WHEN 1 THEN "安全帽定位"
+		WHEN 2 THEN "APP定位"
+		WHEN
+		3 THEN "RFID定位"
+		END
+		from t_user;
+	</select>
+
+	<select id="getOneType" parameterType="map" resultType="String">
+		select
+		distinct
+		CASE equiptype
+		WHEN 0 THEN "手表定位"
+		WHEN 1 THEN "安全帽定位"
+		WHEN 2 THEN
+		"APP定位"
+		WHEN 3 THEN "RFID定位"
+		END
+		from t_user ;
+	</select>
+
+	<select id="getRootTwoForm" resultType="map">
+		<!-- select -->
+		<!-- A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner -->
+		<!-- from app_attendance A,t_user B where A.phonenumber=B.phonenumber; -->
+		select
+		A.App_Month,B.name,A.phonenumber,(case B.worktype when '0' then
+		'其它' when '1' then '农民工' when '2' then '安全人员' when '3' then '管理人员'
+		end) as
+		worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from
+		app_attendance A,t_user B
+		where
+		A.phonenumber=B.phonenumber
+		limit
+		${(page*10)},10;
+	</select>
+	<!-- 表单 -->
+	<!-- public List<String> getworkdata(String phonenumber); -->
+	<select id="getworkdata" resultType="com.welleplus.entity.LocationData"
+		parameterType="map">
+		select
+		b.userName as
+		username,DATE_FORMAT(a.realtime,'%Y-%m-%d %H:%i:%s') as
+		realtime,a.Xloc as xloc,a.Yloc as
+		yloc,a.remark as remark,a.address as
+		address,CASE when a.type='0' then
+		'自动签到' WHEN a.type='1' then '手动签到'
+		else '未记录' end as lo
+		from
+		t_phonelocation as a,t_user as b
+		where
+		a.phonenumber=b.phonenumber
+		and
+		a.phonenumber=#{phonenumber} and
+		DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.realtime)
+		limit
+		${(page*10)},10;
+	</select>
+
+
+	<!-- // 页数0 -->
+	<!-- public Long getCountBy0(Map<String, Object> param); -->
+	<select id="getCountBy0" resultType="long">
+		select count(*)
+		from
+		app_attendance A,t_user B
+		where
+		A.phonenumber=B.phonenumber;
+	</select>
+	<!--++++++++++++ -->
+	<!-- getListBytree -->
+	<!-- uu.name,uu.worktype,uu.phonenumber,uu.equipnumber,uu.equiptype,p.Xloc,p.Yloc,p.watch_date,p.address,p.bat -->
+	<!-- 查询定位类型数据 点击树加载 -->
+	<!-- 可能存在问题 -->
+	<select id="getListBytree" resultType="map" parameterType="map">
+		select
+		A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from
+		(select u.name,u.worktype,u.phonenumber,u.equipnumber,u.equiptype
+		from
+		(
+		<if test="desc ==1">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm where
+			t_firm.id=#{descId} and t_user.rid=t_firm.id and
+			t_user.role=1 and equipnumber is not
+			null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_user.rid=t_company.id and t_user.role=2
+			and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section,t_project where
+			t_firm.id=#{descId}
+			and t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_project.sid=t_section.id and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==2">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company where
+			t_company.id=#{descId} and
+			t_user.rid=t_company.id and
+			t_user.role=2 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_company.id=#{descId} and
+			t_section.cid=t_company.id and t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_company.id=#{descId} and
+			t_section.cid=t_company.id and
+			t_project.sid=t_section.id and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==3">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_section.id=#{descId} and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_section.id=#{descId} and
+			t_project.sid=t_section.id and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==4">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_project.id=#{descId} and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		)as u
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (u.name = #{npe} or u.phonenumber=#{npe}
+				or
+				u.equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and u.worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and u.equiptype=#{equiptype}
+			</if>
+		</trim>
+		) as B
+		,
+		((
+		A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		) union all (
+		select
+		t_phonelocation
+		from t_phonelocation
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		) ) As A
+		<!-- t_phonelocation as A -->
+		A.phonenumber=B.phonenumber
+		<!-- order by a.getdate desc -->
+		limit ${(page*10)},10
+	</select>
+	<!-- getCountBytree -->
+	<!-- cout -->
+	<select id="getCountBytree" parameterType="map" resultType="long">
+		select
+		count(*)
+		from
+		(select
+		u.name,u.worktype,u.phonenumber,u.equipnumber,u.equiptype from
+		(
+		<if test="desc ==1">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm where
+			t_firm.id=#{descId} and t_user.rid=t_firm.id and
+			t_user.role=1 and equipnumber is not
+			null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_user.rid=t_company.id and t_user.role=2
+			and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section where
+			t_firm.id=#{descId} and
+			t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_firm,t_company,t_section,t_project where
+			t_firm.id=#{descId}
+			and t_company.fid=t_firm.id and
+			t_section.cid=t_company.id and
+			t_project.sid=t_section.id and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==2">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company where
+			t_company.id=#{descId} and
+			t_user.rid=t_company.id and
+			t_user.role=2 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_company.id=#{descId} and
+			t_section.cid=t_company.id and t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_company.id=#{descId} and
+			t_section.cid=t_company.id and
+			t_project.sid=t_section.id and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==3">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section where
+			t_section.id=#{descId} and
+			t_user.rid=t_section.id and
+			t_user.role=3 and equipnumber is not null)
+			union all
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_section.id=#{descId} and
+			t_project.sid=t_section.id and t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		<if test="desc ==4">
+			(select
+			t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype
+			from
+			t_user,t_company,t_section,t_project where
+			t_project.id=#{descId} and
+			t_user.rid=t_project.id and
+			t_user.role=4 and equipnumber is not null)
+		</if>
+		)as u
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (u.name = #{npe} or u.phonenumber=#{npe}
+				or
+				u.equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and u.worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and u.equiptype=#{equiptype}
+			</if>
+		</trim>
+		) as B
+		,
+		((
+		A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		) union all (
+		select
+		t_phonelocation
+		from t_phonelocation
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		) ) As A
+		<!-- t_phonelocation as A -->
+		A.phonenumber=B.phonenumber
+		<!-- order by a.getdate desc -->
+		limit ${(page*10)},10
+	</select>
+	<!--++++++++++++ -->
+
+	<!-- //点击之后的总数 -->
+	<!-- public Long getcilckeCountBy0(Map map); -->
+	<select id="getcilckeCountBy0" resultType="long" parameterType="map">
+		select
+		count(*)
+		from
+		t_phonelocation as a,t_user as b
+		where
+		a.phonenumber=b.phonenumber
+		and
+		a.phonenumber=#{phonenumber} and
+		DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.realtime)
+	</select>
+
+	<!-- // 表单数据一 -->
+	<!-- public List<String> getRootTwoForm1(Map<String, Object> map); -->
+	<select id="getRootTwoForm1" resultType="string" parameterType="map">
+
+		select
+		A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from
+		(select u.name,u.worktype,u.phonenumber,u.equipnumber,u.equiptype
+		from(
+		(select
+		t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype from
+		t_user,t_firm where
+		t_firm.id=#{id} and t_user.rid=t_firm.id and
+		t_user.role=1 and equipnumber is not null)
+		union all
+		(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype from
+		t_user,t_firm,t_company where
+		t_firm.id=#{id} and
+		t_company.fid=t_firm.id and t_user.rid=t_company.id and t_user.role=2
+		and equipnumber is not null)
+		union all
+		(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype from
+		t_user,t_firm,t_company,t_section where
+		t_firm.id=#{id} and
+		t_company.fid=t_firm.id and t_section.cid=t_company.id
+		and t_user.rid=t_section.id and t_user.role=3 and equipnumber is not
+		null)
+		union all
+		(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype from
+		t_user,t_firm,t_company,t_section,t_project where
+		t_firm.id=#{id} and t_company.fid=t_firm.id and
+		t_section.cid=t_company.id and
+		t_project.sid=t_section.id and
+		t_user.rid=t_project.id and t_user.role=4 and equipnumber is not
+		null))as u
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (u.name = #{npe} or u.phonenumber=#{npe}
+				or u.equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and u.worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and u.equiptype=#{equiptype}
+			</if>
+		</trim>
+		) as B,
+		((select
+		*
+		from app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND watch_date &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND watch_date &lt;= #{end}
+			</if>
+		</trim>
+		<!-- ) -->
+		<!-- union all (select phonenumber,Xloc,Yloc,DATE_FORMAT(realtime,'%Y-%m-%d 
+			%H:%i:%s') as realtime,address,null as bat from t_phonelocation -->
+		<!-- <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+		<!-- <if test="start != null and start != ''"> -->
+		<!-- AND realtime &gt;= #{start} -->
+		<!-- </if> -->
+		<!-- <if test="end != null and end != ''"> -->
+		<!-- AND realtime &lt;= #{end} -->
+		<!-- </if> -->
+		<!-- </trim> -->
+		) ) As A
+		where
+		<!-- uu.equipnumber=p.imei -->
+		A.phonenumber=B.phonenumber
+<!-- 		order by p.watch_date desc -->
+		limit
+		${(page*10)},10
+	</select>
+	<!-- getListBy0 -->
+	<select id="getListBy0" resultType="map">
+		select
+		A.App_Month,B.name,A.phonenumber,B.worktype,A.App_Attendance,A.App_Late,A.App_Leaveearly,A.App_Miner
+		from
+		(select
+		*
+		from
+		t_user
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="npe != null and npe != ''">
+				and (t_user.name = #{npe} or phonenumber=#{npe}
+				or
+				equipnumber=#{npe})
+			</if>
+			<if test="work != null ">
+				and worktype=#{work}
+			</if>
+			<if test="equiptype != null and equiptype != ''">
+				and equiptype=#{equiptype}
+			</if>
+			and equipnumber is not null
+		</trim>
+		) as B,
+		((select
+		*
+		from
+		app_attendance
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="start != null and start != ''">
+				AND app_month &gt;= #{start}
+			</if>
+			<if test="end != null and end != ''">
+				AND app_month &lt;= #{end}
+			</if>
+		</trim>
+		)
+		<!-- union all (select -->
+		<!-- * -->
+		<!-- from app_attendance -->
+		<!-- <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+		<!-- <if test="start != null and start != ''"> -->
+		<!-- AND app_month &gt;= #{start} -->
+		<!-- </if> -->
+		<!-- <if test="end != null and end != ''"> -->
+		<!-- AND app_month &lt;= #{end} -->
+		<!-- </if> -->
+		<!-- </trim> -->
+		<!-- ) -->
+		)
+		As A
+		where
+		A.phonenumber=B.phonenumber
+		limit ${(page*10)},10
+	</select>
+
+
+
+
+
+</mapper>

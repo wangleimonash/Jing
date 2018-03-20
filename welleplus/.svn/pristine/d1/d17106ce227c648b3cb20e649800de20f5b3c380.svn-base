@@ -1,0 +1,2 @@
+select max(watch_date),DATE_FORMAT(max(watch_date),'%H:%i:%s'),min(watch_date),imei from map_watch_data_act where imei in (select equipnumber from t_user where role = 4 and rid = 11) group by imei,to_days(watch_date)
+

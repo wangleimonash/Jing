@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.SectionDao">
+
+    <insert id="addSectionInfo" parameterType="com.welleplus.entity.Section" useGeneratedKeys="true" keyProperty="id">
+        insert into t_section(name,creatdate,address,cid) values(#{name},#{creatdate},#{address},#{cid})
+    </insert>
+    
+<!--     <select id="getCompanyInfo" parameterType="Long" resultType="com.welleplus.entity.Company"> -->
+<!--         select * from t_company where fid = #{id} -->
+<!--     </select> -->
+	<select id="getSectionInfo" parameterType="Long" resultType="com.welleplus.entity.Section">
+	    select * from t_section where cid = #{id}
+	</select>
+	
+	<select id="getSectionInfoForId" parameterType="Long" resultType = "com.welleplus.entity.Section">
+	    select * from t_section where id = #{id}
+	</select>
+	
+	<select id="getSectionAsMap" parameterType="map" resultType = "com.welleplus.entity.Section">
+	    select * from t_section where id = #{id} and cid = #{cid}
+	</select>
+	
+	<update id="updateSectionName" parameterType = "com.welleplus.entity.Section">
+	    update t_section set name = #{name} where id = #{id}
+	</update>
+	
+	<delete id="deleteSectionInfo" parameterType = "Long">
+	    delete from t_section where id = #{id}
+	</delete>
+
+</mapper>

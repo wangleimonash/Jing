@@ -1,0 +1,161 @@
+package com.welleplus.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.welleplus.result.Result;
+import com.welleplus.server.UserServer;
+
+@Controller
+@RequestMapping("file")
+public class UploadController {
+	private static String uploadPath = null;// 上传文件的目录  
+    private static String tempPath = null; // 临时文件目录  
+    private static File uploadFile = null;  
+    private static File tempPathFile = null;  
+    private static int sizeThreshold = 1024*2000;  
+    private static int sizeMax = 5*1024*1024;  
+    
+  //初始化  
+    static{  
+          tempPath = "C:/upload/tmp";  
+          tempPathFile = new File(tempPath);  
+          if (!tempPathFile.exists()) {  
+              tempPathFile.mkdirs();  
+          }  
+    }  
+    
+    @Resource
+    public UserServer userServer;
+	
+    /**
+     * 上传图片
+     * @param request
+     * @return
+     */
+    @RequestMapping("uploadfile.do")
+    @ResponseBody
+	public Result upload(HttpServletRequest request,Long id){
+    	Result result = new Result();
+    	
+    	if(id==null){
+    		result.setState(false);
+    		result.setMessage("id为空");
+    		return result;
+    	}
+    	
+		boolean isMultpart = ServletFileUpload.isMultipartContent(request);
+		if(isMultpart){
+			DiskFileItemFactory factory = new DiskFileItemFactory();
+			factory.setSizeThreshold(sizeThreshold); // 设置缓冲区大小，这里是4kb  
+			factory.setRepository(tempPathFile);// 设置缓冲区目录  
+			
+			ServletFileUpload upload = new ServletFileUpload(factory);
+			upload.setHeaderEncoding("UTF-8");
+			upload.setSizeMax(sizeMax);
+			
+			try {
+				List<FileItem> items = upload.parseRequest(request);
+				Iterator<FileItem> itr = items.iterator();
+				while(itr.hasNext()){
+					FileItem item = (FileItem)itr.next();
+					if(!item.isFormField()){
+//						long size = item.getSize();
+//						System.out.println(size);
+						String name = item.getName();
+						if(name!=null){
+							File fullFile = new File(name);
+//							String nameA = item.getFieldName();
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = new Date();
+							String nameA = sdf.format(date);
+							String fullFileName = date.getTime()+fullFile.getName();
+							
+							uploadPath = "C:/upload/file/"+nameA;  
+			                  uploadFile = new File(uploadPath);  
+			                  if (!uploadFile.exists()) {  
+			                      uploadFile.mkdirs();  
+			                  }  
+			                  if(!fullFile.getName().equals("")){  
+			                      File savedFile=new File(uploadPath,fullFileName);  
+			                      item.write(savedFile); 
+			                      //将文件路径保存到数据库
+			                      
+			                      result = userServer.updateImgsrc(uploadPath+"/"+fullFileName, id);
+			                      
+//			                      result.setState(true);
+//			                      result.setMessage("保存成功");
+			                  }else{  
+			                	  
+			                  }  
+						}
+					}
+				}
+			}catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return result;
+	}
+    
+    /**
+     * 显示头像
+     * @param response
+     */
+    @RequestMapping("viewimg")
+    @ResponseBody
+    public void getImg(HttpServletResponse response,Long id){
+//    	String path = "D:/upload/file/imgA/test.png";
+    	
+    	if(id==null){
+    		return;
+    	}
+    	String path = userServer.getImgsrcById(id);
+    	if(path==null||path.isEmpty()){
+    		return;
+    	}
+    	
+//    	System.out.println(path);
+    	
+    	ServletOutputStream sos = null;
+    	FileInputStream fis = null;
+    	
+    	try {
+			fis = new FileInputStream(path);
+			int i = fis.available();
+			byte[] data = new byte[i];
+			fis.read(data);
+			fis.close();
+			
+			sos = response.getOutputStream();
+			sos.write(data);
+			sos.flush();
+			sos.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+}

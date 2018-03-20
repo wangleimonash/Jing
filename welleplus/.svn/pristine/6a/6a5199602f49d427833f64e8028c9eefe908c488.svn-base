@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.WorkSettingDao">
+	<insert id="addWorkSetting" parameterType="com.welleplus.entity.WorkSetting">
+	    insert into t_worksetting(startdate,enddate) values(#{startdate},#{enddate})
+	</insert>
+	
+	<update id="updateWorkSetting" parameterType="com.welleplus.entity.WorkSetting">
+	    update t_worksetting set startdate = #{startdate} ,enddate = #{enddate}
+	</update>
+	
+	<select id="getWorkSettingCount" resultType="Long">
+	    select count(*) from t_worksetting
+	</select>
+	
+	<select id="getWorkSetting" resultType="com.welleplus.entity.WorkSetting">
+	    select * from t_worksetting
+	</select>
+
+
+</mapper>

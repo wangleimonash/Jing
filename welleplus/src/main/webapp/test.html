@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="vendors/js/jquery.min.js"></script>
+</head>
+<body>
+	<h1>测试</h1>
+	<script>
+		$(function(){
+			var data = {};
+			data.starttime = "2018-03-12 00:00:00";
+			data.endtime = "2018-03-12 16:00:00";
+			$.ajax({
+				type:"post",
+				url:"http://101.37.34.43:8080/datainterface/data/getinfos.ll",
+				data:data,
+				dataType:"json",
+				success:function(data){
+					console.log(data);
+				},
+				error:function(){
+					
+				}
+			});
+		})
+	</script>
+</body>
+
+</html>

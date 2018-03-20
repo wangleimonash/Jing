@@ -1,0 +1,47 @@
+<div class="x_content" style="padding-right:0px">
+	<div class="col-xs-2 zTreeDemoBackground" ng-show="ztreeshow">
+		<ul id="tree" class="ztree" style="font-size:15px;padding-left:0px"></ul>
+	</div>
+	
+	<div class="col-xs-10" id="mymain" style="padding-right:0px">
+		<div ng-show="showtree" class="nav toggle" style="padding-top:5px;width:35px"><a ng-click="showandhidetree()" class="menu_toggle" style="padding:0px"><i class="fa fa-angle-double-left"></i></a></div>
+		<div ng-show="!showtree" class="nav toggle" style="padding-top:5px;width:35px"><a ng-click="showandhidetree()" class="menu_toggle" style="padding:0px"><i class="fa fa-angle-double-right"></i></a></div>
+		<div class="col-xs-12" style="max-width:1119px;min-height:410px" id="mymap">
+			<div id="container"></div>
+		</div>
+		
+		<div class="clearfix"></div>
+		<div class="clearfix" style="background-color:#bbb;height:3px"></div>
+		<div class="col-xs-12" style="max-width:1119px;padding:0px">
+			<table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>姓名</th>
+                                <th>电话</th>
+                                <th>工种</th>
+                                <th>设备类型</th>
+                                <th>围栏名称</th>
+                                <th>报警类型</th>
+                                <th>报警内容</th>
+                                <th>时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="t in alldatas">
+                                <td>{{$index+1}}</td>
+                                <td>{{t.user.name}}</td>
+                                <td>{{t.user.phonenumber}}</td>
+                                <td>{{t.user.worktypeStr}}</td>
+                                <td>{{t.user.equipTypeStr}}</td>
+                                <td>{{t.fence.name}}</td>
+                                <td>{{t.fence.warningTypeStr}}</td>
+                                <td>{{t.warningTypeStr}}</td>
+                                <td>{{t.watchTime}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+		</div>
+	</div>
+	
+</div>

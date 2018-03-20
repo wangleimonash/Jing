@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>用户登录</title>
+	<link rel="stylesheet" href="css/base.css" />
+	<link rel="stylesheet" href="css/login.css" />
+	<link rel="stylesheet" href="css/result.css" />
+	<script type="text/javascript" src="vendors/js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/cookie.js"></script>
+	<script src="js/login.js"></script>
+</head>
+<body>
+<div class="superlogin"></div>
+<div class="loginBox">
+	<div class="logo"><img src="images/logo_login.png"/></div>
+	<div class="loginMain" style="height:300px">
+		<div class="tabwrap">
+		<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="title">用户名：</td>
+				<td>
+					<input id="name" type="text" class="form-control txt" />
+				</td>
+				<td>
+					<span id="namespan"></span>
+				</td>
+			</tr>
+			<tr>
+				<td class="title">密&nbsp;&nbsp;&nbsp;码：</td>
+				<td><input id="pwd" type="password" class="form-control txt" /></td>
+				<td><span id="pwdspan"></span></td>
+			</tr>
+<!-- 			<tr><td class="title">验证码：</td><td><input id="code" type="text" class="form-control txt txt2" /><span class="yzm"><img style="cursor:pointer;" src="admin/createImg.do" alt="验证码" onclick="this.setAttribute('src','admin/createImg.do?x='+Math.random());" title="点击更换"/></span></td></tr> -->
+			<tr class="errortd">
+				<td>&nbsp;</td>
+				<td style="text-align:center">
+					<i class=""  id="errorI"></i>
+					<span class="errorword" id="msg"></span>
+				</td>
+			</tr>		
+			<tr>
+				<td>&nbsp;</td>
+				<td>
+					<input type="button" class="loginbtn" id="login" value="登录"/>
+					<input type="button" class="resetbtn" value="重置" id="reset"/>
+				</td>
+			</tr>		
+			<tr>
+				<td>&nbsp;</td>
+				<td class="forgetpsw"></td>
+			</tr>	
+		</table>
+		</div>
+	</div>
+</div>
+<div class="footer">Copyright © 井深信息科技（上海）有限公司 <a style="color: #8f8f8f;" href="javascript:void(0);"
+                     onclick="window.open('http://www.welleplus.com','_welle');"
+                     target="_welle">www.welleplus.com</a> </div>
+                     
+                     
+            
+     
+</body>
+</html>

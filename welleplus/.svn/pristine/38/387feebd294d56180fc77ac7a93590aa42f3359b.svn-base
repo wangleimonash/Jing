@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.WarningDao">
+    <resultMap type="com.welleplus.entity.Warning" id="resultWarning">
+        <result column="id" property="id"/>
+        <result column="wname" property="name"/>
+        <result column="warningtype" property="warningType"/>
+        <result column="watchtime" property="watchTime"/>
+        <result column="imei" property="imei"/>
+        <result column="fid" property="fid"/>
+        <association property="user" javaType="com.welleplus.entity.UserInfo">
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="sex" property="sex"/>
+            <result column="role" property="role"/>
+            <result column="phonenumber" property="phonenumber"/>
+            <result column="email" property="email"/>
+            <result column="uname" property="name"/>
+            <result column="creatdate" property="creatdate"/>
+            <result column="rid" property="rid"/>
+            <result column="equipnumber" property="equipnumber"/>
+            <result column="equipstate" property="equipstate"/>
+            <result column="equiptype" property="equiptype"/>
+            <result column="worktype" property="worktype"/>
+            <result column="isin" property="isin"/>
+        </association>
+        <association property="fence" javaType="com.welleplus.entity.Fence">
+            <result column="fname" property="name"/>
+            <result column="state" property="state"/>
+            <result column="creatDate" property="creatDate"/>
+            <result column="updateDate" property="updateDate"/>
+            <result column="fwarningType" property="warningType"/>
+            <result column="startDate" property="startDate"/>
+            <result column="endDate" property="endDate"/>
+        </association>
+    </resultMap>
+    <select id="getWarningInfosCount" resultType="Long" parameterType="com.welleplus.entity.Warning">
+        select count(*) from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id 
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningType = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+    </select>
+    <select id="getWarningInfos" resultMap="resultWarning" parameterType="com.welleplus.entity.Warning">
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType fwarningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id 
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningType = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        order by watchtime desc limit ${(page*10)},10
+    </select>
+    
+    <select id="getWarningInfo" resultMap="resultWarning" parameterType="Long">
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="_parameter != null and _parameter != ''">
+            and w.fid = #{id}
+        </if>
+        order by watchtime desc
+    </select>
+    
+    <select id="getWarningInfoFromQuery" resultMap="resultWarning" parameterType="com.welleplus.entity.FenceQuery">
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+<!--         <if test="_parameter != null and _parameter != ''"> -->
+<!--             and w.fid = #{id} -->
+<!--         </if> -->
+		<if test="id != null">
+		    and w.fid = #{id}
+		</if>
+		<if test="warningType != null and warningType != 0">
+		    and w.warningtype = #{warningType}
+		</if>
+		<if test="startDate != null and startDate != ''">
+		    and watchtime > #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+		    and watchtime &lt; #{endDate} 
+		</if>
+		<if test="info !=null and info != ''">
+		    and (u.name = #{info} or u.equipnumber = #{info} or u.phonenumber = #{info})
+		</if>
+        order by watchtime desc limit ${page*10},10
+    </select>
+    
+    <select id="getWarningCountFromQuery" resultType="Long" parameterType="com.welleplus.entity.FenceQuery">
+        select count(*) from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+<!--         <if test="_parameter != null and _parameter != ''"> -->
+<!--             and w.fid = #{id} -->
+<!--         </if> -->
+		<if test="id != null">
+		    and w.fid = #{id}
+		</if>
+		<if test="warningType != null and warningType != 0">
+		    and w.warningtype = #{warningType}
+		</if>
+		<if test="startDate != null and startDate != ''">
+		    and watchtime > #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+		    and watchtime &lt; #{endDate} 
+		</if>
+		<if test="info !=null and info != ''">
+		    and (u.name = #{info} or u.equipnumber = #{info} or u.phonenumber = #{info})
+		</if>
+    </select>
+    
+    <select id="getCountWarning" parameterType="Long" resultType="Long">
+        select count(*) from t_warning where fid = #{id}
+    </select>
+    
+    <select id="getWarningCountAsRole1" resultType="Long" parameterType="com.welleplus.entity.Warning">
+        select count(*) from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select f.id from t_firm as t,t_company as c,t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.cid = c.id and c.fid = t.id and t.id = #{user.rid})
+    </select>
+    
+    <select id="getWarningInfoAsRole1" resultMap="resultWarning" parameterType="com.welleplus.entity.Warning">
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+<!--         f.name,f.warningtype,case f.warningtype when '0' then '进围栏报警' when '1' then '出围栏报警' else '进出围栏报警' end as warningTypeStr, -->
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin 
+        from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select f.id from t_firm as t,t_company as c,t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.cid = c.id and c.fid = t.id and t.id = #{user.rid}) 
+        limit ${(page*10)},10
+<!--         limit 0,10 -->
+    </select>
+    
+    <select id="getWarningCountAsRole2" resultType="Long" parameterType="com.welleplus.entity.Warning">
+        select count(*) from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select f.id from t_company as c,t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.cid = c.id and c.id = #{user.rid} 
+        and s.id in(select gradeid from t_correlation where grade=3 and uid = #{user.id})) 
+    </select>
+    	
+    <select id="getWarningInfoAsRole2" resultMap="resultWarning" parameterType="com.welleplus.entity.Warning">
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select f.id from t_company as c,t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.cid = c.id and c.id = #{user.rid} 
+        and s.id in(select gradeid from t_correlation where grade=3 and uid = #{user.id})) 
+        limit ${(page*10)},10
+    </select>
+    
+    <select id="getWarningCountAsRole3" resultType="Long" parameterType="com.welleplus.entity.Warning">
+        select count(*) from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select f.id from t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.id = #{user.rid} 
+        and p.id in(select gradeid from t_correlation where grade=4 and uid = #{user.id})) 
+    </select>
+    
+    <select id="getWarningInfoAsRole3" resultMap="resultWarning" parameterType='com.welleplus.entity.Warning'>
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select f.id from t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.id = #{user.rid} 
+        and p.id in(select gradeid from t_correlation where grade=4 and uid = #{user.id})) 
+        limit ${(page*10)},10
+    </select>
+    
+    <select id="getWarningCountAsRole4" resultType="Long" parameterType="com.welleplus.entity.Warning">
+        select count(*) from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select id from t_fence where pid = #{user.rid}) 
+    </select>
+    
+    <select id="getWarningInfoAsRole4" resultMap="resultWarning" parameterType="com.welleplus.entity.Warning">
+        select w.id,w.name wname,w.imei,w.warningtype, DATE_FORMAT(w.watchtime,'%Y-%m-%d %H:%i:%s') as watchtime,w.fid,
+        f.name fname,f.state,f.creatDate,f.updateDate,f.warningType,f.startDate,f.endDate,u.userName,u.password,
+        u.sex,u.role,u.phonenumber,u.email,u.name uname,u.creatdate,u.rid,u.equipnumber,u.equipstate,u.equiptype,
+        u.worktype,u.isin from t_warning as w join t_user as u on w.imei = u.equipnumber join t_fence as f on w.fid = f.id
+        <if test="fence.name !=null and fence.name != ''">
+            and f.name = #{fence.name}
+        </if>
+        <if test="fence.warningType != null and fence.warningType != '' and fence.warningType != 0">
+            and f.warningtype = #{fence.warningType}
+        </if>
+        <if test="user.param != null and user.param != ''">
+            and u.name = #{user.param} or u.equipnumber = #{user.param} or u.phonenumber = #{user.param}
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and w.watchtime &gt; #{startDate} and w.watchtime &lt; #{endDate}
+        </if>
+        and w.fid in 
+        (select id from t_fence where pid = #{user.rid}) 
+        limit ${(page*10)},10
+    </select>
+
+</mapper>

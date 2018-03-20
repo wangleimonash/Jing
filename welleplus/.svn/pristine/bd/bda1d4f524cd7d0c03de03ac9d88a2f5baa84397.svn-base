@@ -1,0 +1,44 @@
+<div style="float: left;width: 21%;height:600px;">
+<!--<div style="float: left;width: 26%;height: 580px; background-color:#E0E0E0;">-->
+   
+    <dl style="margin-left:-3%;margin-top: 20px;">
+        <dt>
+            <input type="text" placeholder="璇疯緭鍏ュ鍚嶆垨鐢佃瘽" align="right" style="margin-right:-7%;width:215px;height: 30px;" ng-model="map.param">
+        </dt>
+    </dl>
+
+    <dl style="position: relative;left: 153px;top:-13px;padding: 4px 2px 2px 4px;">
+        <dt>
+            <button type="button" class="btn btn-primary" ng-click="searchlocation()">鏌ヨ</button>
+            <!--<button style="border: solid 1px;border-radius: 5px;"-->
+                    <!--align="center" ng-click="searchlocation()">-->
+                <!--&lt;!&ndash;<i class="layui-icon" style="font-size: 25px; color: #050206;">&#xe615;</i>&ndash;&gt;-->
+                <!--<div class="fa-hove col-md-3 col-sm-4 col-xs-12">-->
+                    <!--<a>-->
+                        <!--<i class="fa fa-search" style="font-size: 25px;color: #050206;"></i>-->
+                    <!--</a>-->
+                <!--</div>-->
+            <!--</button>-->
+        </dt>
+    </dl>
+    <div style="color:gray;margin-left: -4%;">
+        <dl align="left">
+            <dt style="padding: 2px 2px 2px 2px;">
+                濮撳悕:&nbsp;<span style="color: rgba(110,112,117,0.77)">{{locations[0].userName}}</span>
+            </dt>
+            <dt style="padding: 2px 2px 2px 2px;">鐢佃瘽:&nbsp;<span style="color: #606266">{{locations[0].phonenumber}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">閮ㄩ棬:&nbsp;<span style="color: #606266">{{locations[0].name1}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">鏂藉伐闃�:&nbsp;<span style="color: #606266">{{locations[0].name2}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">鐝粍:&nbsp;<span style="color: #606266">{{locations[0].name3}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">鐢佃瘽:&nbsp;<span style="color: #606266">{{locations[0].name4}}</span></dt>
+
+            <dt style="padding: 2px 2px 2px 2px;">鏃堕棿:&nbsp;<span style="color: #606266">{{locations[0].datetime}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">浣嶇疆:&nbsp;<span style="color: #606266">{{locations[0].address}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">璁惧绫诲瀷:&nbsp;<span style="color: #606266">{{locations[0].equiptype}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">瀹氫綅鏂瑰紡:&nbsp;<span style="color: #606266">{{locations[0].position}}</span></dt>
+        </dl>
+
+    </div>
+</div>
+<div id="container" style="height: 580px;width: 79%;float: left;position: relative;left: 0px;"></div>
+

@@ -1,0 +1,28 @@
+package com.welleplus.dao;
+
+import java.util.List;
+
+import com.welleplus.entity.FenceQuery;
+import com.welleplus.entity.Warning;
+
+public interface WarningDao {
+	List<Warning> getWarningInfo(Long id) throws Exception;
+	Long getCountWarning(Long id) throws Exception;
+	List<Warning> getWarningInfoAsRole1(Warning info) throws Exception;
+	List<Warning> getWarningInfoAsRole2(Warning info) throws Exception;
+	List<Warning> getWarningInfoAsRole3(Warning info) throws Exception;
+	List<Warning> getWarningInfoAsRole4(Warning info) throws Exception;
+	
+	Long getWarningCountAsRole1(Warning info);
+	Long getWarningCountAsRole2(Warning info);
+	Long getWarningCountAsRole3(Warning info);
+	Long getWarningCountAsRole4(Warning info);
+	
+	List<Warning> getWarningInfos(Warning info) throws Exception;
+	Long getWarningInfosCount(Warning info);
+	
+	List<Warning> getWarningInfoFromQuery(FenceQuery info) throws Exception;
+	
+	Long getWarningCountFromQuery(FenceQuery info) throws Exception;
+
+}

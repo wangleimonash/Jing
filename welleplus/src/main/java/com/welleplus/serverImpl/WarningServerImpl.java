@@ -1,0 +1,394 @@
+package com.welleplus.serverImpl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.welleplus.dao.WarningDao;
+import com.welleplus.entity.Fence;
+import com.welleplus.entity.FenceQuery;
+import com.welleplus.entity.UserInfo;
+import com.welleplus.entity.Warning;
+import com.welleplus.result.Result;
+import com.welleplus.server.WarningServer;
+
+@Service
+public class WarningServerImpl implements WarningServer{
+	@Resource
+	private WarningDao wDao;
+
+	@Override
+	public Result getWarningInfo(Long id) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			List<Warning> infos = wDao.getWarningInfo(id);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("0".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else{
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if("1".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if("2".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("app");
+				}else if("3".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+				
+				if(1==user.getWorktype()){
+					warning.getUser().setWorktypeStr("农名工");
+				}else if(2==user.getWorktype()){
+					warning.getUser().setWorktypeStr("安全人员");
+				}else if(3==user.getWorktype()){
+					warning.getUser().setWorktypeStr("管理人员");
+				}else{
+					warning.getUser().setWorktypeStr("其他");
+				}
+			}
+			result.setData(infos);
+			result.setState(true);
+			result.setMessage("查询成功");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setState(false);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getCountWarning(Long id) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			Long count = wDao.getCountWarning(id);
+			result.setId(count);
+			result.setState(true);
+			result.setMessage("查询成功");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setId(0L);
+			result.setState(false);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getWarningInfoAsRole1(Warning info) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			Long count = wDao.getWarningCountAsRole1(info);
+			List<Warning> infos = wDao.getWarningInfoAsRole1(info);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("0".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else{
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if (1 == user.getEquiptype()){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if (2 == user.getEquiptype()){
+					warning.getUser().setEquipTypeStr("app");
+				}else if (3 == user.getEquiptype()){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+			}
+			result.setData(infos);
+			result.setState(true);
+			result.setMessage("查询成功");
+			result.setCount(count);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setData(null);
+			result.setState(false);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getWarningInfoAsRole2(Warning info) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			Long count = wDao.getWarningCountAsRole2(info);
+			List<Warning> infos = wDao.getWarningInfoAsRole2(info);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("0".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else{
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if("1".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if("2".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("app");
+				}else if("3".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+			}
+			result.setData(infos);
+			result.setState(true);
+			result.setMessage("查询成功");
+			result.setCount(count);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setState(false);
+			result.setData(null);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getWarningInfoAsRole3(Warning info) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			Long count = wDao.getWarningCountAsRole3(info);
+			List<Warning> infos = wDao.getWarningInfoAsRole3(info);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("0".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else{
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if("1".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if("2".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("app");
+				}else if("3".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+			}
+			result.setState(true);
+			result.setData(infos);
+			result.setMessage("查询成功");
+			result.setCount(count);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setState(false);
+			result.setData(null);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getWarningInfoAsRole4(Warning info) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			Long count = wDao.getWarningCountAsRole4(info);
+			List<Warning> infos = wDao.getWarningInfoAsRole4(info);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("0".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else{
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if("1".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if("2".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("app");
+				}else if("3".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+			}
+			result.setState(true);
+			result.setData(infos);
+			result.setMessage("查询成功");
+			result.setCount(count);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setState(false);
+			result.setData(null);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getWarningInfos(Warning info) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			Long count = wDao.getWarningInfosCount(info);
+			List<Warning> infos = wDao.getWarningInfos(info);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("2".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else if ("3".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if("1".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if("2".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("app");
+				}else if("3".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+			}
+			result.setState(true);
+			result.setData(infos);
+			result.setMessage("查询成功");
+			result.setCount(count);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setState(false);
+			result.setMessage("查询失败");
+			result.setData(null);
+			result.setCount(0L);
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
+	public Result getWarningInfoFromQuery(FenceQuery info) {
+		// TODO Auto-generated method stub
+		Result result = new Result();
+		try {
+			long count = wDao.getWarningCountFromQuery(info);
+			result.setCount(count);
+			List<Warning> infos = wDao.getWarningInfoFromQuery(info);
+			for (Warning warning : infos) {
+				if("1".equals(warning.getWarningType())){
+					warning.setWarningTypeStr("离开");
+				}else{
+					warning.setWarningTypeStr("进入");
+				}
+				Fence fence = warning.getFence();
+				if("0".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("进围栏报警");
+				}else if ("1".equals(fence.getWarningType())){
+					warning.getFence().setWarningTypeStr("出围栏报警");
+				}else{
+					warning.getFence().setWarningTypeStr("进出围栏报警");
+				}
+				UserInfo user = warning.getUser();
+				if("0".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("手表");
+				}else if("1".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("安全帽");
+				}else if("2".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("app");
+				}else if("3".equals(user.getEquiptype())){
+					warning.getUser().setEquipTypeStr("rfid");
+				}else{
+					warning.getUser().setEquipTypeStr("其他");
+				}
+				
+				if(1==user.getWorktype()){
+					warning.getUser().setWorktypeStr("农名工");
+				}else if(2==user.getWorktype()){
+					warning.getUser().setWorktypeStr("安全人员");
+				}else if(3==user.getWorktype()){
+					warning.getUser().setWorktypeStr("管理人员");
+				}else{
+					warning.getUser().setWorktypeStr("其他");
+				}
+			}
+			result.setData(infos);
+			result.setState(true);
+			result.setMessage("查询成功");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			result.setState(false);
+			result.setMessage("查询失败");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+}

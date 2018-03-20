@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.AppThreeServiceDao">
+	<select id="getrootdataone" resultType="String">
+		select distinct worktype from t_user where worktype is not null ORDER BY worktype ASC
+	</select>
+	<!-- , (case when C.photopath is null then '无' else '有' end) -->
+	<!-- select A.name,A.worktype,A.phonenumber,B.mainbody,B.watchtime,C.photopath 
+		from t_user A , t_journal B ,t_img C where A.phonenumber=B.phonenumber and 
+		C.title=B.title -->
+	<select id="getrootsurfacedata" resultType="com.welleplus.entity.App_Code">
+<!-- 		select A.name,A.worktype,A.phonenumber,B.mainbody,B.watchtime,case when -->
+<!-- 		C.photopath is null then '无' else '有' end as photopath from t_user A , -->
+<!-- 		t_journal B ,t_img C where A.phonenumber=B.phonenumber -->
+<!-- 		or C.title=B.title GROUP BY watchtime ORDER BY B.title desc LIMIT 10; -->
+			select 
+			 A.name,
+			 A.worktype,
+			 A.phonenumber,
+			 B.mainbody,
+			 B.realtime as watchtime,
+<!-- 			case when -->
+<!-- 		C.photopath is null then '无' else '有' end as photopath  -->
+             B.title as photopath
+		from t_user A,
+		t_journal B ,t_img C where A.phonenumber=B.phonenumber
+		 and B.realtime is not null GROUP BY B.realtime ORDER BY B.realtime asc LIMIT 0,10;
+	
+	</select>
+
+
+	<select id="getsectiondata" resultType="String">
+		select distinct name from t_firm where name is not null ORDER BY worktype ASC
+	</select>
+
+	<select id="getrootetengineering" resultType="String">
+		select distinct name from t_company where name is not null
+	</select>
+	<select id="getrootconstruction" resultType="String">
+		select distinct name from t_section where name is not null
+	</select>
+	<select id="getroottteam" resultType="String">
+		select distinct name from t_project where name is not null
+	</select>
+	<!-- 工种一 -->
+	<!-- List<String> getrootdataone1(Map<String, Object> map); -->
+	<select id="getrootdataone1" resultType="String" parameterType="map">
+
+		(select distinct worktype from t_user,t_firm where
+		t_firm.id=#{id} and
+		t_user.rid=t_firm.id and t_user.role=1 and worktype is not null ORDER BY worktype ASC)
+		union
+		(select distinct worktype from t_user,t_firm,t_company where
+		t_firm.id=#{id} and t_company.fid=t_firm.id and
+		t_user.rid=t_company.id and t_user.role=2 and worktype is not null ORDER BY worktype ASC)
+		union
+		(select distinct worktype from t_user,t_firm,t_company,t_section where
+		t_firm.id=#{id} and t_company.fid=t_firm.id and
+		t_section.cid=t_company.id
+		and t_user.rid=t_section.id and t_user.role=3 and worktype is not null ORDER BY worktype ASC)
+		union
+		(select distinct worktype from t_user,t_firm,t_company,t_section,t_project
+		where
+		t_firm.id=#{id} and t_company.fid=t_firm.id and
+		t_section.cid=t_company.id and
+		t_project.sid=t_section.id and
+		t_user.rid=t_project.id and t_user.role=4 and worktype is not null ORDER BY worktype ASC)
+
+	</select>
+	<!-- 工种二 -->
+	<!-- List<String> getrootdataone2(Map<String, Object> map); -->
+	<select id="getrootdataone2" resultType="String" parameterType="map">
+		(select distinct worktype from t_user,t_company where
+		t_company.id=#{rid} and t_user.rid=t_company.id and t_user.role=2 and
+		worktype is not null ORDER BY worktype desc) union
+		(select distinct worktype
+		from t_user,
+		(select gradeid from t_correlation
+		where uid=#{id}
+		) As corr
+		where t_user.rid=corr.gradeid and t_user.role=3 and
+		worktype is not null ORDER BY worktype desc) union
+		(select distinct worktype
+		from t_user,t_project,
+		(select gradeid from
+		t_correlation
+		where uid=#{id}
+		) As corr
+		where t_project.sid=corr.gradeid and
+		t_user.rid=t_project.id and t_user.role=4 and worktype is not null ORDER BY worktype )
+	</select>
+	<!-- List<String> getrootdataone3(Map<String, Object> map); -->
+	<!-- 工种三 -->
+	<!-- List<String> getrootdataone2(Map<String, Object> map); -->
+	<select id="getrootdataone3" resultType="String" parameterType="map">
+		<!-- ((select distinct worktype from t_user,t_section where -->
+		<!-- t_section.id=#{rid} and t_user.rid=t_section.id and t_user.role=3 
+			and worktype is not null) union -->
+		<!-- (select distinct worktype -->
+		<!-- from t_user,t_project, -->
+		<!-- (select distinct worktype from t_correlation -->
+		<!-- where uid=#{id} and worktype is not null -->
+		<!-- ) As corr -->
+		<!-- where t_project.sid=corr.gradeid and -->
+		<!-- t_user.rid=t_project.id and t_user.role=4 and worktype is not null)) -->
+
+		(select distinct worktype from t_user,t_section where
+		t_section.id=#{rid} and t_user.rid=t_section.id and t_user.role=3 and
+		worktype is not null) union
+		(select distinct worktype
+		from t_user,t_project,
+		(select gradeid from
+		t_correlation
+		where uid=#{id}
+		) As corr
+		where t_project.sid=corr.gradeid and
+		t_user.rid=t_project.id and t_user.role=4 and worktype is not null ORDER BY worktype asc)
+	</select>
+
+
+	<select id="getrootdataone4" resultType="String" parameterType="map">
+		<!-- ((select distinct worktype from t_user,t_section where -->
+		<!-- t_section.id=#{rid} and t_user.rid=t_section.id and t_user.role=3 
+			and worktype is not null) union -->
+		<!-- (select distinct worktype -->
+		<!-- from t_user,t_project, -->
+		<!-- (select distinct worktype from t_correlation -->
+		<!-- where uid=#{id} and worktype is not null -->
+		<!-- ) As corr -->
+		<!-- where t_project.sid=corr.gradeid and -->
+		<!-- t_user.rid=t_project.id and t_user.role=4 and worktype is not null)) -->
+		(select
+		distinct worktype
+		from t_user,t_project where
+		t_project.id=#{rid} and
+		t_user.rid=t_project.id and t_user.role=4 and worktype is not
+		null ORDER BY worktype asc)
+
+	</select>
+
+
+
+<!-- 查询定位类型数据 点击树加载 -->
+	<select id="getListBytree" resultType="map">
+		select u.name,u.worktype,u.phonenumber,u.equipnumber,u.equiptype,DATE_FORMAT(u.getdate,'%Y-%m-%d %H:%i:%s') as getdate from
+		(
+			<if test="param.desc ==1">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm where
+				t_firm.id=#{param.descId} and t_user.rid=t_firm.id and t_user.role=1 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm,t_company where
+				t_firm.id=#{param.descId} and t_company.fid=t_firm.id and
+				t_user.rid=t_company.id and t_user.role=2 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm,t_company,t_section where
+				t_firm.id=#{param.descId} and t_company.fid=t_firm.id and
+				t_section.cid=t_company.id and t_user.rid=t_section.id and
+				t_user.role=3 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm,t_company,t_section,t_project where
+				t_firm.id=#{param.descId} and t_company.fid=t_firm.id and t_section.cid=t_company.id and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			<if test="param.desc ==2">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company where
+				t_company.id=#{param.descId} and t_user.rid=t_company.id and
+				t_user.role=2 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section where
+				t_company.id=#{param.descId} and
+				t_section.cid=t_company.id and t_user.rid=t_section.id and
+				t_user.role=3 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section,t_project where
+				t_company.id=#{param.descId} and t_section.cid=t_company.id and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			<if test="param.desc ==3">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section where
+				t_section.id=#{param.descId} and t_user.rid=t_section.id and
+				t_user.role=3 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section,t_project where
+				t_section.id=#{param.descId} and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			<if test="param.desc ==4">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section,t_project where
+				t_project.id=#{param.descId} and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			)as u 
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.npe != null and param.npe != ''">
+				and (u.name = #{param.npe} or u.phonenumber=#{param.npe} 
+				or u.equipnumber=#{param.npe})
+			</if>
+			<if test="param.work != null and param.work != ''">
+				and u.worktype=#{param.work}
+			</if>
+			<if test="param.equiptype != null and param.equiptype != ''">
+				and u.equiptype=#{param.equiptype}
+			</if>
+			<if test="param.start != null and param.start != ''">
+				AND u.getdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND u.getdate &lt;= #{param.end}
+			</if>
+		</trim>
+		order by u.getdate desc
+		limit ${(param.page*10)},10
+	</select>
+
+<!-- 查询定位类型数量 点击树加载 -->
+	<select id="getCountBytree" resultType="long">
+		select count(*) from
+		(
+			<if test="param.desc ==1">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm where
+				t_firm.id=#{param.descId} and t_user.rid=t_firm.id and t_user.role=1 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm,t_company where
+				t_firm.id=#{param.descId} and t_company.fid=t_firm.id and
+				t_user.rid=t_company.id and t_user.role=2 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm,t_company,t_section where
+				t_firm.id=#{param.descId} and t_company.fid=t_firm.id and
+				t_section.cid=t_company.id and t_user.rid=t_section.id and
+				t_user.role=3 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_firm,t_company,t_section,t_project where
+				t_firm.id=#{param.descId} and t_company.fid=t_firm.id and t_section.cid=t_company.id and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			<if test="param.desc ==2">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company where
+				t_company.id=#{param.descId} and t_user.rid=t_company.id and
+				t_user.role=2 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section where
+				t_company.id=#{param.descId} and
+				t_section.cid=t_company.id and t_user.rid=t_section.id and
+				t_user.role=3 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section,t_project where
+				t_company.id=#{param.descId} and t_section.cid=t_company.id and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			<if test="param.desc ==3">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section where
+				t_section.id=#{param.descId} and t_user.rid=t_section.id and
+				t_user.role=3 and equipnumber is not null)
+			union all 
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section,t_project where
+				t_section.id=#{param.descId} and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			<if test="param.desc ==4">
+			(select t_user.name,worktype,t_user.phonenumber,equipnumber,equiptype,getdate 
+			from t_user,t_company,t_section,t_project where
+				t_project.id=#{param.descId} and t_user.rid=t_project.id and
+				t_user.role=4 and equipnumber is not null)
+			</if>
+			)as u 
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.npe != null and param.npe != ''">
+				and (u.name = #{param.npe} or u.phonenumber=#{param.npe} 
+				or u.equipnumber=#{param.npe})
+			</if>
+			<if test="param.work != null and param.work != ''">
+				and u.worktype=#{param.work}
+			</if>
+			<if test="param.equiptype != null and param.equiptype != ''">
+				and u.equiptype=#{param.equiptype}
+			</if>
+			<if test="param.start != null and param.start != ''">
+				AND u.getdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND u.getdate &lt;= #{param.end}
+			</if>
+		</trim>
+	</select>
+
+
+
+
+
+
+</mapper>

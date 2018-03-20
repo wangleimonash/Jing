@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+function setImagePreview(docObj,localImagId,imgObjPreview)     
+{    
+      
+    var name=docObj.value;  
+    var type=name.split(".");  
+    type=type[type.length-1];  
+    if("jpg"!=type &&"png"!=type &&"jpeg"!=type&&"gif"!=type){  
+        alert("错误的类型，请选择图片");  
+        document.getElementById("txtSrc").value=null;//防止将非图片类型上传  
+        return ;  
+    }  
+      
+    if(docObj.files && docObj.files[0])    
+    {    
+
+        //alert("hello"+docObj.files[0]);  
+        //火狐7以上版本不能用上面的getAsDataURL()方式获取，需要一下方式      
+        document.getElementById("imgDiv").style.display="block";  
+        document.getElementById("img").src= window.URL.createObjectURL(docObj.files[0]);  
+//         $("#myinput").click();
+    }    
+    else    
+    {    
+        //IE下，使用滤镜    
+        docObj.select();    
+        var imgSrc = document.selection.createRange().text;    
+            
+        //必须设置初始大小    
+        localImagId.style.width = "300px";    
+        localImagId.style.height = "200px";    
+            
+        //图片异常的捕捉，防止用户修改后缀来伪造图片    
+        try    
+        {    
+            localImagId.style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale)";    
+            localImagId.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = imgSrc;    
+         }    
+         catch(e)    
+         {    
+            alert("您上传的图片格式不正确，请重新选择!");    
+            return false;    
+         }                              
+         imgObjPreview.style.display = 'none';    
+         document.selection.empty();   
+         
+//          $("#myinput").click();
+   }    
+   return true;    
+}   
+</script>
+</head>
+<body>
+	<h1>图片上传</h1>
+	<div style="display:none" align="center" id="imgDiv">  
+        <img alt="" src="" id="img" name="图片预览" width="200" height="200" id="图片预览">  
+    </div>  
+<!--     <form action="/welleplus/file/uploadfile.do" method="post" enctype="multipart/form-data" name="form1">   -->
+        <input name="imgA" type="file" id="txtSrc" onChange="setImagePreview(this,imgDiv,img);" style="opacity:0"> 
+        <input type="button" id="showbutton" value="选择图片"> 
+        <input type="submit" name="submit" value="上传" id="myinput">  
+<!--     </form>  -->
+    
+    <h2>图片显示</h2>
+    <img id="viewimg" style="width:20px;height:20px">
+    
+    <script src="vendors/js/jquery.min.js"></script>
+    <script>
+    	$(function(){
+    		$("#viewimg").attr("src","/welleplus/file/viewimg.do");
+    	});
+    	
+    	$("#myinput").click(function () {
+            var formData = new FormData();
+            formData.append("myfile", document.getElementById("txtSrc").files[0]);   
+            $.ajax({
+                url: "/welleplus/file/uploadfile.do?id="+id,
+                type: "POST",
+                data: formData,
+                /**
+                *必须false才会自动加上正确的Content-Type
+                */
+                contentType: false,
+                /**
+                * 必须false才会避开jQuery对 formdata 的默认处理
+                * XMLHttpRequest会对 formdata 进行正确的处理
+                */
+                processData: false,
+                success: function (data) {
+                    if (data.state) {
+                        alert("上传成功！");
+                        $("#txtSrc").val("");
+                    }else{
+                    	alert(data.msg);
+                    }
+//                     $("#imgWait").hide();
+                },
+                error: function () {
+                    alert("上传失败！");
+//                     $("#imgWait").hide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

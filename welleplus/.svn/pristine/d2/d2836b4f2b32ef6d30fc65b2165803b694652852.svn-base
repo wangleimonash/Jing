@@ -1,0 +1,85 @@
+app.controller("fenceInfoCtrl",function($scope,$rootScope,fenceServer){
+	$scope.fence = {};
+	$scope.fence.role = 0;
+	$scope.fence.rid = 0;
+	$scope.fence.uid = 0;
+	$scope.fence.desc = 0;
+	$scope.fence.descId = 0;
+	
+	fenceServer.getFenceInfos($scope.fence).then(function(data){
+		console.log(1111);
+		console.log(data);
+		if(data.state){
+			$scope.fenceinfos = data.data;
+		}else{
+			$scope.fenceinfos = {};
+		}
+	});
+});
+
+app.directive("fenceop",function($rootScope,$document,userServer,waringServer){
+	return{
+		restrict:"E",
+		require:"ngModel",
+		link:function(scope,element,attrs,ngModel){
+			element.bind("click",function(){
+				console.log(ngModel.$modelValue);
+//				$rootScope.detailedinfos.describe = ngModel.$modelValue.describe;
+//				$rootScope.detailedinfos.equipTypeStr = ngModel.$modelValue.equipTypeStr;
+//				$rootScope.detailedinfos.equipnumber = ngModel.$modelValue.equipnumber;
+//				$rootScope.detailedinfos.getdate = ngModel.$modelValue.getdate;
+//				$rootScope.detailedinfos.name = ngModel.$modelValue.name;
+//				$rootScope.detailedinfos.sex = ngModel.$modelValue.sex;
+//				$rootScope.detailedinfos.phonenumber = ngModel.$modelValue.phonenumber;
+//				$rootScope.detailedinfos.worktypeStr = ngModel.$modelValue.worktypeStr;
+//				var role = ngModel.$modelValue.role;
+//				if(role=="0"){
+//					$rootScope.detailedinfos.roleStr = "系统管理员";
+//				}else if(role=="1"){
+//					$rootScope.detailedinfos.roleStr = "公司管理员";
+//				}else if(role=="2"){
+//					$rootScope.detailedinfos.roleStr = "分公司管理员";
+//				}else if(role=="3"){
+//					$rootScope.detailedinfos.roleStr = "部门管理员";
+//				}else if(role=="4"){
+//					$rootScope.detailedinfos.roleStr = "分组管理员";
+//				}else{
+//					$rootScope.detailedinfos.roleStr = "其他";
+//				}
+				var id = ngModel.$modelValue.id;
+				$rootScope.fencewarninginfo = {};
+				$rootScope.fencewarninginfo.name = ngModel.$modelValue.name;
+				var fencestate = ngModel.$modelValue.state;
+				if(fencestate=="1"){
+					$rootScope.fencewarninginfo.state = "开启";
+				}else{
+					$rootScope.fencewarninginfo.state = "关闭";
+				}
+				var warningtype = ngModel.$modelValue.warningType;
+				if(warningtype=="0"){
+					$rootScope.fencewarninginfo.warningtypestr = "无报警";
+				}else if(warningtype=="1"){
+					$rootScope.fencewarninginfo.warningtypestr = "进围栏报警";
+				}else if(warningtype == "2"){
+					$rootScope.fencewarninginfo.warningtypestr = "出围栏报警";
+				}else if(warningtype == "3"){
+					$rootScope.fencewarninginfo.warningtypestr = "进出围栏报警";
+				}
+				$rootScope.fencewarninginfo.startDate = ngModel.$modelValue.startDate;
+				$rootScope.fencewarninginfo.endDate = ngModel.$modelValue.endDate;
+				scope.$apply(function(){
+					$("#fenceinfosbutton").click();
+					waringServer.getwarningbyfenceid(id).then(function(data){
+						console.log(data);
+						if(data.state){
+							$rootScope.fencewarninginfos = data.data;
+						}else{
+							$rootScope.fencewarninginfos = {};
+						}
+						
+					});
+				});
+			});
+		}
+	}
+});

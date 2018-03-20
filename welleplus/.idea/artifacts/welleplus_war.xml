@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="welleplus:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="welleplus.war">
+      <element id="artifact" artifact-name="welleplus:war exploded" />
+    </root>
+  </artifact>
+</component>

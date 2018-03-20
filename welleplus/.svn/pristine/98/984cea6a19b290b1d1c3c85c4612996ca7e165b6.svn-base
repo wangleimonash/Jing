@@ -1,0 +1,78 @@
+<div class="x_content" style="float: left;width: 21%;height: 600px;">
+    <!--<h1 style="color: #2C4257"align="center">历史轨迹</h1>-->
+    <dl style=";margin-top: 20px;margin-left:3%;">
+        <dt>
+            <!--<input class="js-typeahead" type="text" placeholder="请输入姓名或电话" ng-model="map.param" style="margin-right:-7%;width:208px;height: 30px;">-->
+            <div class="typeahead__container">
+                <div class="typeahead__field">
+            					<span class="typeahead__query">
+								<input class="js-typeahead" name="q" type="search" autocomplete="off"
+                                       style="border: 1px solid #ddd; height: 30px; width: 208px;margin-right:-7%;"
+                                       placeholder="姓名或设备编号或电话" id="param2"  ng-model="map.param">
+								</span></div></div>
+        </dt>
+        <dt style="height: 5px;">&nbsp;</dt>
+        <dt>
+            <input class="js-typeahead" type="text" placeholder="请输入起始时间" id="startdate" ng-model="map.startdate" style="border: 1px solid #ddd;margin-right:-7%;width:208px;height: 30px;padding: 6px 12px;">
+        </dt>
+        <dt style="height: 5px;">&nbsp;</dt>
+        <dt>
+            <input class="js-typeahead" type="text" placeholder="请输入结束时间" id="enddate" ng-model="map.enddate" style="border: 1px solid #ddd;margin-right:-7%;width:208px;height: 30px;padding: 6px 12px;">
+        </dt>
+    </dl>
+    <dl style="position: relative;left: 71%;top:-13px;padding: 2px 2px 2px 2px;">
+        <dt>
+            <button type="button" class="btn btn-primary" ng-click="searchhistory()">查询</button>
+
+            <!--<button style="border: solid 1px;border-radius: 5px;"-->
+                    <!--align="center" ng-click="searchhistory()" id="searchhistory">-->
+                <!--&lt;!&ndash;<i class="layui-icon" style="font-size: 25px; color: #050206;">&#xe615;</i>&ndash;&gt;-->
+                <!--<div class="fa-hove col-md-3 col-sm-4 col-xs-12">-->
+                    <!--<a  >-->
+                        <!--<i class="fa fa-search" style="font-size: 25px;color: #050206;"></i>-->
+                    <!--</a>-->
+                <!--</div>-->
+            <!--</button>-->
+        </dt>
+    </dl>
+    <div style="color:gray;margin-left: 3%;margin-top: -3%">
+    <dl align="left">
+        <dt style="padding: 2px 2px 2px 2px;">
+            <!--姓名:&nbsp;<span style="color: #606266">{{historys[0].userName}}</span>&nbsp;&nbsp;&nbsp;-->
+            姓名:&nbsp;<span style="color: #606266">{{historys.locationmap[0].Name}}{{historys.locationmap[0].name}}</span>
+            <!--&nbsp;&nbsp;&nbsp;电话:&nbsp;<span style="color: #606266">{{historys[0].phonenumber}}</span>-->
+        </dt>
+        <dt style="padding: 2px 2px 2px 2px;">
+            <!--姓名:&nbsp;<span style="color: #606266">{{historys[0].userName}}</span>&nbsp;&nbsp;&nbsp;-->
+            电话:&nbsp;<span style="color: #606266">{{historys.locationmap[0].phonenumber}}</span>
+            <!--&nbsp;&nbsp;&nbsp;电话:&nbsp;<span style="color: #606266">{{historys[0].phonenumber}}</span>-->
+        </dt>
+        <dt style="padding: 2px 2px 2px 2px;">
+            <!--姓名:&nbsp;<span style="color: #606266">{{historys[0].userName}}</span>&nbsp;&nbsp;&nbsp;-->
+            设备类型:&nbsp;<span style="color: #606266">{{historys.locationmap[0].equiptype}}</span>
+            <!--&nbsp;&nbsp;&nbsp;电话:&nbsp;<span style="color: #606266">{{historys[0].phonenumber}}</span>-->
+        </dt>
+<dt style="padding: 2px 2px 2px 2px;">
+            <!--姓名:&nbsp;<span style="color: #606266">{{historys[0].userName}}</span>&nbsp;&nbsp;&nbsp;-->
+    当前组织:&nbsp;<span style="color: #606266">{{historys.map.name4}}</span>
+            <!--&nbsp;&nbsp;&nbsp;电话:&nbsp;<span style="color: #606266">{{historys[0].phonenumber}}</span>-->
+        </dt>
+
+    </dl>
+        <dl style="margin-bottom: 0px;margin-top:0px;font-size: 20px;color: black;"><img src="images/start.png" style="width:25px"> <span style="font-size:18px">起点</span></dl>
+    <dl align="left">
+        <!--<dt style="padding: 2px 2px 2px 2px;">设备类型:&nbsp;<span style="color: #606266">{{historys[historys.length-1].equiptype}}</span></dt>-->
+        <dt style="padding: 2px 2px 2px 2px;">定位方式:&nbsp;<span style="color: #606266">{{historys.locationmap[historys.locationmap.length-1].position}}</span></dt>
+        <dt style="padding: 2px 2px 2px 2px;">时间:&nbsp;<span style="color: #606266">{{historys.locationmap[historys.locationmap.length-1].datetime}}</span></dt>
+        <dt style="padding: 2px 2px 2px 2px;">位置:&nbsp;<span style="color: #606266">{{historys.locationmap[historys.locationmap.length-1].address}}</span></dt>
+    </dl>
+        <dl  style="margin-bottom: 0px;margin-top:0px;font-size: 20px;color: black;"><img src="images/end.png" style="width:25px"> <span style="font-size:18px">终点</span></dl>
+    <dl align="left">
+        <!--<dt style="padding: 2px 2px 2px 2px;">设备类型:&nbsp;<span style="color: #606266">{{historys[0].equiptype}}</span></dt>-->
+        <dt style="padding: 2px 2px 2px 2px;">定位方式:&nbsp;<span style="color: #606266">{{historys.locationmap[0].position}}</span></dt>
+        <dt style="padding: 2px 2px 2px 2px;">时间:&nbsp;<span style="color: #606266">{{historys.locationmap[0].datetime}}</span></dt>
+        <dt style="padding: 2px 2px 2px 2px;">位置:&nbsp;<span style="color: #606266">{{historys.locationmap[0].address}}</span></dt>
+    </dl>
+    </div>
+</div>
+<div id="container" style="height: 580px;width: 79%;float: right;position: relative;left: 0px;"></div>

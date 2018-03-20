@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.FenceDao">
+
+    <insert id="addFenceInfo" parameterType="com.welleplus.entity.Fence" useGeneratedKeys="true" keyProperty="id">
+        insert into t_fence(name,state,creatdate,warningtype,startdate,enddate,pid,Xloc,Yloc,Xloc1,Yloc1,Xloc2,Yloc2,Xloc3,Yloc3,Xloc4,Yloc4,Xloc5,Yloc5,Xloc6,Yloc6,updateDate) 
+        values(#{name},#{state},#{creatDate},#{warningType},#{startDate},#{endDate},#{pid},#{Xloc},#{Yloc},#{Xloc1},#{Yloc1},#{Xloc2},#{Yloc2},#{Xloc3},#{Yloc3},#{Xloc4},#{Yloc4},#{Xloc5},#{Yloc5},#{Xloc6},#{Yloc6},#{updateDate});
+    </insert>
+    
+    <select id="getFenceInfoFromPid" parameterType="Long" resultType="com.welleplus.entity.Fence">
+<!--         select * from t_fence where pid = #{pid} -->
+        select id,name,state,warningtype,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as creatdate,DATE_FORMAT(updateDate,'%Y-%m-%d %H:%i:%s') as updateDate,startdate,enddate,
+        Xloc,Yloc,Xloc1,Yloc1,Xloc2,Yloc2,Xloc3,Yloc3,Xloc4,Yloc4,Xloc5,Yloc5,Xloc6,Yloc6 from t_fence where pid = #{pid}
+    </select>
+    
+    <update id="updateFenceInfoFromPid" parameterType = "com.welleplus.entity.Fence">
+        update t_fence set name=#{name},state=#{state},warningtype=#{warningType},startdate=#{startDate},enddate=#{endDate},Xloc=#{Xloc},
+        Yloc=#{Yloc},Xloc1=#{Xloc1},Yloc1=#{Yloc1},Xloc2=#{Xloc2},Yloc2=#{Yloc2},Xloc3=#{Xloc3},Yloc3=#{Yloc3},Xloc4=#{Xloc4},Yloc4=#{Yloc4},Xloc5=#{Xloc5},Yloc5=#{Yloc5},Xloc6=#{Xloc6},Yloc6=#{Yloc6},updateDate=#{updateDate} where pid=#{pid}
+    </update>
+    
+    <delete id="deleteFenceInfo" parameterType = "Long">
+        delete from t_fence where pid = #{pid}
+    </delete>
+    
+    <select id="getFenceInfoFromFirmId" parameterType="Long" resultType="com.welleplus.entity.Fence">
+        select f.* from t_firm as t,t_company as c,t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.cid = c.id and c.fid = t.id  
+        <if test="_parameter != null">
+            and t.id = #{id}
+        </if>
+    </select>
+    
+    <select id="getFenceInfoFromCompanyId" parameterType="Map" resultType="com.welleplus.entity.Fence">
+        select f.* from t_company as c,t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.cid = c.id and c.id = #{id} 
+        <if test="uid != null and uid!=''">
+            and s.id in(select gradeid from t_correlation where uid = #{uid})
+        </if>
+    </select>
+    
+    <select id="getFenceInfoFromSectionId" parameterType="Map" resultType="com.welleplus.entity.Fence">
+        select f.* from t_section as s,t_project as p,t_fence as f where f.pid = p.id and p.sid = s.id and s.id = #{id} 
+        <if test="uid != null and uid!=''">
+            and p.id in(select gradeid from t_correlation where uid = #{uid})
+        </if>
+    </select>
+    
+    <select id="getCountUserInFence" parameterType="Long" resultType="Long">
+        select count(*) from t_user as u join t_fence as f on u.rid = f.pid and u.role = 4 and u.isin = 1  
+        <if test="_parameter != null ">
+            and f.id = #{id}
+        </if>
+    </select>
+
+</mapper>

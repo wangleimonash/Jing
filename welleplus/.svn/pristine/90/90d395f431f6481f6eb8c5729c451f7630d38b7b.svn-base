@@ -1,0 +1,135 @@
+$(function(){
+	$("#name").focus();
+});
+$("#loginbutton").click(function(){
+	var reg = /^\w{3,10}$/;
+	var username = $("#name").val();
+	var password = $("#pwd").val();
+	if(!reg.test(username)){
+//		$("#msg").html("请输入3到10位数字,字母或下划线");
+		alert("请输入3到10位数字,字母或下划线")
+		$("#name").val("");
+		return;
+	}
+	if(!reg.test(password)){
+//		$("#msg").html("请输入3到10位数字,字母或下划线");
+		alert("请输入3到10位数字,字母或下划线")
+		$("#pwd").val("");
+		return;
+	}
+//	$("#msg").html("");
+	
+	$("#loginbutton").val("正在登录...");
+	$("#loginbutton").attr("disabled","disabled");
+	
+	var url = "user/login.do";
+	//登錄
+	$.ajax({
+		type:"post",
+		url:url,
+		data:{"userName":username,"password":password},
+		dataType:"json",
+		success:function(data){
+			if(data.state&&data.data&&data.data.length!=0){
+//					console.log(data);
+//					alert("登录成功");
+				
+//					if(data.data[0].worktype!=0){
+//						alert("你没有权限登录");
+//						$("#name").val("");
+//						$("#pwd").val("");
+//						return;
+//					}
+				if(data.data[0].promise==0){
+					alert("你没有权限登录");
+					$("#name").val("");
+					$("#pwd").val("");
+					$("#loginbutton").val("登录");
+					$("#loginbutton").removeAttr("disabled");
+					return;
+				}
+				console.log(data.data[0].worktype!=0);
+				var wname = getCookie("welleplususername");
+				if(wname==null){
+					addCookie("welleplususername",username,60);
+				}else{
+					SetCookie("welleplususername",username);
+				}
+				
+				var wrole = getCookie("welleplusrole");
+				if(wrole==null){
+					addCookie("welleplusrole",data.data[0].role,60);
+				}else{
+					SetCookie("welleplusrole",data.data[0].role);
+				}
+				
+				var wrid = getCookie("welleplusrid");
+				if(wrid==null){
+					addCookie("welleplusrid",data.data[0].rid,60);
+				}else{
+					SetCookie("welleplusrid",data.data[0].rid);
+				}
+				
+				var wuid = getCookie("welleplusuid");
+				if(wuid==null){
+					addCookie("welleplusuid",data.data[0].id,60);
+				}else{
+					SetCookie("welleplusuid",data.data[0].id);
+				}
+//				var wip = getCookie("welleplusip");
+//				if(wip==null){
+//					addCookie("welleplusip",data.tempip,60);
+//				}else{
+//					SetCookie("welleplusip",data.tempip);
+//				}
+				
+				var wname = getCookie("welleplusname");
+				if(wuid==null){
+					addCookie("welleplusname",data.data[0].name,60);
+				}else{
+					SetCookie("welleplusname",data.data[0].name);
+				}
+				console.log(data);
+				
+//					var roleid = data.data[0].role;
+//					if(roleid!="0"&&roleid!="1"&&roleid!="2"&&roleid!=3){
+//						alert("你没有权限登录");
+//						$("#name").val("");
+//						$("#pwd").val("");
+//						return;
+//					}
+				
+				
+				window.location.href = "main.html";
+			}else if(data.state&&data.data&&data.data.length==0){
+				alert("密码或用户名错误");
+				$("#loginbutton").val("登录");
+				$("#loginbutton").removeAttr("disabled");
+			}else{
+				alert(data.message);
+			}
+		},
+		error:function(){
+			alert("登录失败");
+			$("#name").val("");
+			$("#pwd").val("");
+			$("#loginbutton").val("登录");
+			$("#loginbutton").removeAttr("disabled");
+		}
+	});
+});
+
+//$("#name").focus(function(){
+//	$("#msg").html("");
+//	$("#pwd").val("");
+//});
+
+//$("#pwd").focus(function(){
+//	$("#msg").html("");
+//});
+
+
+//$("#reset").click(function(){
+//	$("#name").val("");
+//	$("#pwd").val("");
+//});

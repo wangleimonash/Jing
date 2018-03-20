@@ -1,0 +1,1097 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.UserDao">
+    <!-- 查询用户信息语句 -->
+    <select id="getUserInfos" resultType="com.welleplus.entity.UserInfo">
+		select
+		*
+		from t_user
+	</select>
+
+    <insert id="addUserInfo" parameterType="com.welleplus.entity.UserInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user(userName,password,sex,role,phonenumber,email,name,creatdate,rid,worktype,equiptype,equipnumber,equipstate,getdate,promise) 
+        values(#{userName},#{password},#{sex},#{role},#{phonenumber},#{email},#{name},#{creatdate},#{rid},#{worktype},#{equiptype},#{equipnumber},#{equipstate},#{getdate},#{promise});
+    </insert>
+
+    <select id="getUserInfoForId" parameterType="Long" resultType="com.welleplus.entity.UserInfo">
+        select * from t_user where id = #{id}
+    </select>
+    
+    <select id="login" parameterType="com.welleplus.entity.UserInfo" resultType="com.welleplus.entity.UserInfo">
+        select * from t_user where userName = #{userName} and password = #{password}
+    </select>
+
+    <!--     DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') -->
+    <select id="getUserInfo" parameterType="com.welleplus.entity.UserInfo" resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,promise from t_user
+        <where>
+            <if test="userName!=null and userName!=''">
+                and userName = #{userName}
+            </if>
+            <if test="password!=null and password!=''">
+                and password = #{password}
+            </if>
+            <if test="role!=null and role!=''">
+                and role = #{role}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="email!=null and email!=''">
+                and email = #{email}
+            </if>
+            <if test="name !=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="rid!=null and rid!=''">
+                and rid = #{rid}
+            </if>
+        </where>
+        order by creatdate desc limit ${(page*10)},10
+    </select>
+    <!-- 修改语句 -->
+    <update id="editUser" parameterType="com.welleplus.entity.UserInfo">
+        update
+        t_user
+        set
+        userName=#{userName},phonenumber=#{phonenumber},name=#{name},sex=#{sex},email=#{email},
+        worktype=#{worktype},equiptype=#{equiptype},equipnumber=#{equipnumber},equipstate=#{equipstate},getdate = #{getdate},promise=#{promise},password=#{password}
+        where id = #{id}
+    </update>
+    <!-- 删除语句 -->
+    <delete id="delUser" parameterType="Long">
+        delete from
+        t_user
+        where
+        id= #{id}
+    </delete>
+    <select id="getCountFromRoleAndRid" parameterType="map" resultType="Long">
+        select count(*) from t_user where role = #{role} and rid = #{rid}
+    </select>
+
+    <select id="getUserInfoForRole" parameterType="com.welleplus.entity.UserInfo"
+            resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,IF(promise=1,'管理员','普通员工') as promiseStr from t_user
+        <where>
+            role = #{role} and rid = #{rid}
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="equipnumber!=null and equipnumber!=''">
+                and equipnumber = #{equipnumber}
+            </if>
+            <if test="equiptype!=null and equiptype!=4">
+                and equiptype = #{equiptype}
+            </if>
+            <if test="equipstate!=null and equipstate!=3">
+                and equipstate = #{equipstate}
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserInfoFromCorrelation" parameterType="map" resultType="com.welleplus.entity.UserInfo">
+        select * from t_user where role = #{role} and rid in (select gradeid from t_correlation where uid=#{id})
+    </select>
+
+
+    <select id="getUserInfoOfRole2FromRole1" parameterType="com.welleplus.entity.UserInfo"
+            resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,IF(promise=1,'管理员','普通员工') as promiseStr from t_user
+        <where>
+            role = '2' and rid in (select id from t_company where fid = #{rid})
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="equipnumber!=null and equipnumber!=''">
+                and equipnumber = #{equipnumber}
+            </if>
+            <if test="equiptype!=null and equiptype!=4">
+                and equiptype = #{equiptype}
+            </if>
+            <if test="equipstate!=null and equipstate!=3">
+                and equipstate = #{equipstate}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getUserInfoOfRole3FromRole1" parameterType="com.welleplus.entity.UserInfo"
+            resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,IF(promise=1,'管理员','普通员工') as promiseStr from t_user
+        <where>
+            role = '3' and rid in (select s.id from t_company as c,t_section as s where s.cid=c.id and c.fid = #{rid})
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="equipnumber!=null and equipnumber!=''">
+                and equipnumber = #{equipnumber}
+            </if>
+            <if test="equiptype!=null and equiptype!=4">
+                and equiptype = #{equiptype}
+            </if>
+            <if test="equipstate!=null and equipstate!=3">
+                and equipstate = #{equipstate}
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserInfoOfRole4FromRole1" parameterType="com.welleplus.entity.UserInfo"
+            resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,IF(promise=1,'管理员','普通员工') as promiseStr from t_user
+        <where>
+            role = '4' and rid in (select p.id from t_company as c,t_section as s,t_project as p where p.sid = s.id and
+            s.cid = c.id and c.fid = #{rid})
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="equipnumber!=null and equipnumber!=''">
+                and equipnumber = #{equipnumber}
+            </if>
+            <if test="equiptype!=null and equiptype!=4">
+                and equiptype = #{equiptype}
+            </if>
+            <if test="equipstate!=null and equipstate!=3">
+                and equipstate = #{equipstate}
+            </if>
+        </where>
+    </select>
+    
+    <select id="getUserInfoFromRole0" parameterType="com.welleplus.entity.UserInfo" resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,IF(promise=1,'管理员','普通员工') as promiseStr from t_user
+        <where>
+            <if test="name!=null and name!=''">
+                and name = #{name}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="equipnumber!=null and equipnumber!=''">
+                and equipnumber = #{equipnumber}
+            </if>
+            <if test="equiptype!=null and equiptype!=4">
+                and equiptype = #{equiptype}
+            </if>
+            <if test="equipstate!=null and equipstate!=3">
+                and equipstate = #{equipstate}
+            </if>
+        </where>
+    </select>
+    <!--通过参数获取所查询的用户信息条数-->
+    <select id="getUserInfoCountByParam" parameterType="com.welleplus.entity.UserInfo"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM t_user u
+        <where>
+            (u.name = #{param} OR u.phonenumber=#{param} OR u.userName=#{param} OR u.equipnumber=#{param})
+        </where>
+    </select>
+    <!--通过参数获取所查询的用户信息-->
+    <select id="getUserInfoByParam" parameterType="com.welleplus.entity.UserInfo"
+            resultType="com.welleplus.entity.UserInfo">
+        SELECT u.id,u.imgsrc,u.userName,u.phonenumber,u.equiptype,u.equipnumber,u.equipstate,u.role,u.rid,u.`name`AS Name
+        FROM t_user u
+        <where>
+            (u.name = #{param} OR u.phonenumber=#{param} OR u.userName=#{param} OR u.equipnumber=#{param})
+        </where>
+    </select>
+    <!--通过参数获取所查询的用户信息集合- ************************************************ -->
+    <select id="getUserInfoMapByParam" parameterType="com.welleplus.entity.UserInfo"
+            resultType="map">
+        SELECT a.userid,a.Name,a.userName,a.phonenumber,a.equiptype,a.equipnumber,a.rid,a.worktype,a.role,
+        b.id1,b.name1,b.grade1,b.id2,b.name2,b.grade2,b.id3,b.name3,b.grade3,b.id4,b.name4,b.grade4
+        FROM
+        (SELECT
+        u.id AS userid,u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber, case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,u.equipnumber AS equipnumber,u.rid AS rid,u.worktype AS worktype,u.role AS role
+        FROM t_user u
+        WHERE
+        u.id = #{id}
+        ) a,
+        (SELECT
+        fir.id AS id1,fir.`name` AS name1,fir.grade AS grade1,
+        com.fid AS fid,com.id AS id2,com.`name` AS name2,com.grade AS grade2,
+        sec.cid AS cid,sec.id AS id3,sec.`name` AS name3,sec.grade AS grade3,
+        pro.sid AS sid,pro.id AS id4,pro.`name` AS name4,pro.grade AS grade4
+        FROM t_firm fir
+        LEFT JOIN t_company com ON com.fid=fir.id
+        LEFT JOIN t_section sec ON sec.cid=com.id
+        LEFT JOIN t_project pro ON pro.sid=sec.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="role == 1">
+                and fir.id = #{rid}
+            </if>
+            <if test="role == 2">
+                and com.id = #{rid}
+            </if>
+            <if test="role == 3">
+                and sec.id = #{rid}
+            </if>
+            <if test="role == 4">
+                and pro.id = #{rid}
+            </if>
+        </trim>
+--         order by pro.id desc limit 0,1
+        ) b
+    </select>
+    <!--获取使用手机app用户的位置信息-->
+    <select id="getLocationByPhone" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+        SELECT
+        u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber, case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,u.equipnumber AS equipnumber,u.worktype AS worktype,u.role AS role,
+        pl.Xloc AS Xloc,pl.Yloc AS Yloc,DATE_FORMAT(pl.watchtime ,'%Y-%m-%d %H:%i:%s') AS
+        datetime,pl.address AS address,pl.imei AS imei,
+        case pl.position
+        when 0 then '定位失败'
+        when 1 then 'GPS定位'
+        when 2 then '前次定位'
+        when 4 then '缓存定位'
+        when 5 then 'WiFi定位'
+        when 6 then '基站定位'
+        when 8 then '离线定位'
+        else '未知'
+        end position
+        FROM t_user u
+        LEFT JOIN t_phonelocation pl ON u.phonenumber=pl.phonenumber
+        WHERE
+        (u.phonenumber = #{phonenumber})
+        order by watchtime desc limit 0,1
+    </select>
+    <!--获取使用安全帽设备的用户位置信息-->
+    <select id="getLocationByEquipment" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+        SELECT
+        u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber,
+        case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,
+        u.equipnumber AS equipnumber,u.worktype AS worktype,u.role AS role,
+        mwd.Xloc AS Xloc,mwd.Yloc AS Yloc, DATE_FORMAT(mwd.watch_date ,'%Y-%m-%d %H:%i:%s') AS
+        datetime,mwd.address AS address,mwd.imei AS imei,mwd.bat AS bat,
+        case mwd.is_position
+        when 'V' then '基站'
+        when 'A' then 'GPS'
+        else '未知'
+        end position
+        FROM t_user u
+        LEFT JOIN map_watch_data_act mwd ON u.equipnumber=mwd.IMEI
+        WHERE
+        (u.id = #{id})
+        order by datetime desc limit 0,1
+    </select>
+    <!--获取使用手表设备的用户位置信息-->
+    <select id="getLocationByWatch" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+        SELECT
+        u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber,
+        case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,
+        u.equipnumber AS equipnumber,u.worktype AS worktype,u.role AS role,
+        watch.LongitudeConv AS Xloc,watch.LatitudeConv AS Yloc, DATE_FORMAT(watch.DateCreated ,'%Y-%m-%d %H:%i:%s') AS
+        datetime,watch.Address AS address,watch.Imei AS imei,watch.Elec AS bat,watch.Altitude AS Altitude,
+        heart.HeartRate AS heart,
+        case watch.IsPosition
+        when 'V' then '基站'
+        when 'A' then 'GPS'
+        else '未知'
+        end position
+        FROM t_user u
+        LEFT JOIN eqwatchgps watch ON u.equipnumber=watch.Imei
+        LEFT JOIN (SELECT HeartRate,Imei FROM eqwatchheart heart order by heart.DateCreated desc limit 0,1) heart ON heart.Imei= watch.Imei
+        WHERE
+        (u.id = #{id})
+        order by datetime desc limit 0,1
+    </select>
+    <!--获取使用手机app用户的位置轨迹信息-->
+    <select id="getHistoryByPhone" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+       SELECT
+        u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber, case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,u.equipnumber AS equipnumber,u.worktype AS worktype,u.role AS role,
+        pl.Xloc AS Xloc,pl.Yloc AS Yloc,DATE_FORMAT(pl.watchtime ,'%Y-%m-%d %H:%i:%s') AS
+        datetime,pl.address AS address,pl.imei AS imei,
+        case pl.position
+        when 0 then '定位失败'
+        when 1 then 'GPS定位'
+        when 2 then '前次定位'
+        when 4 then '缓存定位'
+        when 5 then 'WiFi定位'
+        when 6 then '基站定位'
+        when 8 then '离线定位'
+        else '未知'
+        end position
+        FROM t_user u
+        LEFT JOIN t_phonelocation pl ON u.phonenumber=pl.phonenumber
+        <where>
+            <!--<if test="condition != null and condition != ''">-->
+            (u.phonenumber = #{phonenumber})
+            <!--</if>-->
+            <if test="startdate != null and startdate!=''">
+                <![CDATA[and pl.watchtime>=#{startdate}]]>
+            </if>
+            <if test="enddate != null and enddate !=''">
+                <![CDATA[and pl.watchtime<=#{enddate}]]>
+            </if>
+        </where>
+        order by datetime desc
+    </select>
+    <!--获取使用安全帽设备的用户位置轨迹信息-->
+    <select id="getHistoryByEquipment" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+        SELECT
+        u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber,
+        case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,
+        u.equipnumber AS equipnumber,u.worktype AS worktype,u.role AS role,
+        mwd.Xloc AS Xloc,mwd.Yloc AS Yloc, DATE_FORMAT(mwd.watch_date ,'%Y-%m-%d %H:%i:%s') AS
+        datetime,mwd.address AS address,mwd.imei AS imei,mwd.bat AS bat,
+        case mwd.is_position
+        when 'V' then '基站'
+        when 'A' then 'GPS'
+        else '未知'
+        end position
+        FROM t_user u
+        LEFT JOIN map_watch_data_act mwd ON u.equipnumber=mwd.IMEI
+        <where>
+            <!--<if test="condition != null and condition != ''">-->
+            (u.phonenumber = #{phonenumber})
+            <!--</if>-->
+            <if test="startdate != null and startdate!=''">
+                <![CDATA[and mwd.watch_date>=#{startdate}]]>
+            </if>
+            <if test="enddate != null and enddate !=''">
+                <![CDATA[and mwd.watch_date<=#{enddate}]]>
+            </if>
+        </where>
+        order by datetime desc
+    </select>
+    <!--获取使用手表设备的用户位置轨迹信息-->
+    <select id="getHistoryByWatch" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+        SELECT
+        u.`name`AS Name,u.userName AS userName,u.phonenumber AS phonenumber,
+        case u.equiptype
+        when 0 then '手表'
+        when 1 then '安全帽'
+        when 2 then '手机app'
+        when 3 then 'RFID'
+        else '未知'
+        end equiptype,
+        u.equipnumber AS equipnumber,u.worktype AS worktype,u.role AS role,
+        watch.LongitudeConv AS Xloc,watch.LatitudeConv AS Yloc, DATE_FORMAT(watch.DateCreated ,'%Y-%m-%d %H:%i:%s') AS
+        datetime,watch.Address AS address,watch.Imei AS imei,watch.Elec AS bat,
+        case watch.IsPosition
+        when 'V' then '基站'
+        when 'A' then 'GPS'
+        else '未知'
+        end position
+        FROM t_user u
+        LEFT JOIN eqwatchgps watch ON u.equipnumber=watch.Imei
+        <where>
+            <!--<if test="condition != null and condition != ''">-->
+            (u.phonenumber = #{phonenumber})
+            <!--</if>-->
+            <if test="startdate != null and startdate!=''">
+                <![CDATA[and watch.DateCreated>=#{startdate}]]>
+            </if>
+            <if test="enddate != null and enddate !=''">
+                <![CDATA[and watch.DateCreated<=#{enddate}]]>
+            </if>
+        </where>
+        order by datetime desc
+    </select>
+    <select id="getuserinfoforuniq" parameterType="com.welleplus.entity.UserInfo" resultType="com.welleplus.entity.UserInfo">
+        select * from t_user 
+        <where>
+            <if test="userName!=null and userName!=''">
+                and userName = #{userName}
+            </if>
+            <if test="phonenumber!=null and phonenumber!=''">
+                and phonenumber = #{phonenumber}
+            </if>
+            <if test="equipnumber!=null and equipnumber!=''">
+                and equipnumber = #{equipnumber}
+            </if>
+        </where>
+    </select>
+    
+    <select id="getUserInfoCountFromRole2Id" parameterType="map" resultType="map">
+        select count(*) as worktypecount,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr from
+        ((select u.* from t_user as u,t_company as c where c.fid = #{fid} and u.role = 2 and u.rid = c.id and c.id = #{cid})
+		UNION
+		(select u.* from t_user as u,t_company as c,t_section as s where 
+		c.fid = #{fid} and s.cid = c.id and u.role = 3 and u.rid = s.id and c.id = #{cid})
+		UNION
+		(select u.* from t_user as u,t_company as c,t_section as s,t_project as p where 
+		c.fid = #{fid} and s.cid = c.id and p.sid = s.id and u.role = 4 and u.rid = p.id and c.id = #{cid})) as uus
+		GROUP BY worktype
+    </select>
+    
+    <select id="getUserInfoCountFromRole1Id" parameterType="map" resultType="map">
+        select count(*) as worktypecount,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr from ((select * from t_user where role = 1 and rid = #{fid})
+		UNION
+		(select u.* from t_user as u,t_company as c where u.role = 2 and c.fid = #{fid} and c.id = u.rid)
+		UNION
+		(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.cid = c.id and c.fid = #{fid} and u.rid = s.id)
+		UNION
+		(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+		u.role = 4 and p.sid = s.id and s.cid = c.id and c.fid = #{fid} and p.id = u.rid)) as uus
+		GROUP BY worktype
+    </select>
+    
+
+<!-- *************************************************************************************************************     -->
+    <select id="getJournalInfoFromRole1Click1" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u
+        <where>
+	        j.phonenumber = u.phonenumber and  j.phonenumber in
+	        (select phonenumber from ((select * from t_user where role = 1 and rid = #{descId})
+			UNION
+			(select u.* from t_user as u,t_company as c where u.role = 2 and c.fid = #{descId} and c.id = u.rid)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.cid = c.id and c.fid = #{descId} and u.rid = s.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+			u.role = 4 and p.sid = s.id and s.cid = c.id and c.fid = #{descId} and p.id = u.rid)) as uus) 
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+        </where>
+        
+    </select>
+    <select id="getCountJournalInfoFromRole1Click1" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and  j.phonenumber in
+	        (select phonenumber from ((select * from t_user where role = 1 and rid = #{descId})
+			UNION
+			(select u.* from t_user as u,t_company as c where u.role = 2 and c.fid = #{descId} and c.id = u.rid)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.cid = c.id and c.fid = #{descId} and u.rid = s.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+			u.role = 4 and p.sid = s.id and s.cid = c.id and c.fid = #{descId} and p.id = u.rid)) as uus)
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+        </where>
+        
+    </select>
+    <select id="getJournalInfoFromRole1Click2" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and j.phonenumber in
+	        (select phonenumber from (
+			(select u.* from t_user as u,t_company as c where u.role = 2 and c.id = #{descId} and u.rid = c.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.cid = #{descId} and u.rid = s.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+			u.role = 4 and p.sid = s.id and s.cid = #{descId} and u.rid = p.id)) as uus)
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+        </where>
+        
+    </select>
+    <select id="getCountJournalInfoFromRole1Click2" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and j.phonenumber in
+	        (select phonenumber from (
+			(select u.* from t_user as u,t_company as c where u.role = 2 and c.id = #{descId} and u.rid = c.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.cid = #{descId} and u.rid = s.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+			u.role = 4 and p.sid = s.id and s.cid = #{descId} and u.rid = p.id)) as uus)
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+        </where>
+        
+    </select>
+    <select id="getJournalInfoFromRole1Click3" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and j.phonenumber in
+	        (select phonenumber from (
+			(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.id = #{descId} and u.rid = s.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+			u.role = 4 and p.sid = #{descId} and p.id = u.rid)) as uus)
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+        </where>
+        
+    </select>
+    <select id="getCountJournalInfoFromRole1Click3" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and j.phonenumber in
+	        (select phonenumber from (
+			(select u.* from t_user as u,t_company as c,t_section as s where u.role = 3 and s.id = #{descId} and u.rid = s.id)
+			UNION
+			(select u.* from t_user as u,t_company as c,t_section as s,t_project as p WHERE 
+			u.role = 4 and p.sid = #{descId} and p.id = u.rid)) as uus) 
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+        </where>
+        
+    </select>
+    <select id="getJournalInfoFromRole1Click4" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u 
+        <where>
+            j.phonenumber = u.phonenumber and j.phonenumber in
+			(select phonenumber from t_user where rid = #{descId} and role = 4) 
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+        </where>
+        
+    </select>
+    <select id="getCountJournalInfoFromRole1Click4" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u 
+        <where>
+            j.phonenumber = u.phonenumber and j.phonenumber in
+			(select phonenumber from t_user where rid = #{descId} and role = 4) 
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+        </where>
+        
+    </select>
+    
+    
+    
+    <select id="getJournalInfoFromRole2Click2" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and j.phonenumber in
+	        (select phonenumber from (
+			select * from t_user where role = 2 and rid = #{rid}
+			UNION
+			select * from t_user where role = 3 and rid in(select gradeid from t_correlation where uid = #{uid} and grade = 3)
+			UNION
+			select * from t_user where role = 4 and rid in (select gradeid from t_correlation where grade = 4 and uid in (select id from t_user where role = 3 and rid in(select gradeid from t_correlation where uid = #{uid} and grade = 3)))) as uus)
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+		</where>
+    </select>
+    <select id="getCountJournalInfoFromRole2Click2" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u 
+        <where>
+	        j.phonenumber = u.phonenumber and j.phonenumber in
+	        (select phonenumber from (
+			select * from t_user where role = 2 and rid = #{rid}
+			UNION
+			select * from t_user where role = 3 and rid in(select gradeid from t_correlation where uid = #{uid} and grade = 3)
+			UNION
+			select * from t_user where role = 4 and rid in (select gradeid from t_correlation where grade = 4 and uid in (select id from t_user where role = 3 and rid in(select gradeid from t_correlation where uid = #{uid} and grade = 3)))) as uus)
+			<if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+		</where>
+    </select>
+    <select id="getJournalInfoFromRole2Click3" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u 
+        <where>
+            j.phonenumber = u.phonenumber and j.phonenumber in
+            (select phonenumber from (
+            select * from t_user where role = 3 and rid = #{descId}
+	        UNION
+	        select u.* from t_user as u,t_project as p where u.role = 4 and u.rid = p.id and p.sid = #{descId}) as uus)
+	        <if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+        </where>
+        
+    </select>
+    <select id="getCountJournalInfoFromRole2Click3" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u 
+        <where>
+            j.phonenumber = u.phonenumber and j.phonenumber in
+            (select phonenumber from (
+            select * from t_user where role = 3 and rid = #{descId}
+	        UNION
+	        select u.* from t_user as u,t_project as p where u.role = 4 and u.rid = p.id and p.sid = #{descId}) as uus)
+	        <if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+        </where>
+        
+    </select>
+    
+    <select id="getJournalInfoFromRole3Click3" parameterType="com.welleplus.entity.UserInfoQuery" resultType="map">
+        select j.title,u.name,j.id,j.watchtime,u.worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,j.phonenumber,j.mainbody from t_journal as j,t_user as u
+        <where>
+            j.phonenumber = u.phonenumber and j.phonenumber in
+            (select phonenumber from (
+	        select * from t_user where role = 3 and rid = #{rid}
+	        UNION
+	        select * from t_user where role=4 and rid in (select gradeid from t_correlation where uid = #{uid} and grade = 4)) as uus)
+	        <if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+			limit ${page*10},10
+        </where>
+    </select>
+    <select id="getCountJournalInfoFromRole3Click3" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+        select count(*) as sumjournal from t_journal as j,t_user as u
+        <where>
+            j.phonenumber = u.phonenumber and j.phonenumber in
+            (select phonenumber from (
+	        select * from t_user where role = 3 and rid = #{rid}
+	        UNION
+	        select * from t_user where role=4 and rid in (select gradeid from t_correlation where uid = #{uid} and grade = 4)) as uus)
+	        <if test="worktype!=null and worktype!=4">
+			    and u.worktype = #{worktype}
+			</if>
+			<if test="name !=null and name !=''">
+			    and u.name = #{name}
+			</if>
+			<if test="startdate !=null and startdate != '' and enddate !=null and enddate != ''">
+			    and j.watchtime &gt;= #{startdate} and j.watchtime &lt;= #{enddate}
+			</if>
+        </where>
+    </select>
+    
+    <select id="getImageInfo" parameterType="map" resultType="com.welleplus.entity.ImageInfo">
+        select * from t_img where title = #{title}
+    </select>
+    
+    
+    <select id="getUserInfoByRoleAndRid" parameterType="map" resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "安全帽" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,promise from t_user where role=#{role} and rid = #{rid}
+    </select>
+    
+    <select id="getUserInfoByRoleAndRidAndInfo" parameterType="map" resultType="com.welleplus.entity.UserInfo">
+        select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "gps定位器" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,promise from t_user
+<!--          where role=#{role} and rid = #{rid} -->
+        <where>
+            role= #{role} and rid = #{rid}
+            <if test="info != null and info!= ''">
+                and (name = #{info} or phonenumber = #{info} or equipnumber = #{info})
+            </if>
+        </where>
+    </select>
+    
+<!--     根据ids查询用户信息 -->
+	<select id="getUserCountByIds" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+	    select count(*) from t_user
+	    <where>
+	        <if test="ids!=null and ids!=''">
+	            <foreach collection="ids" item="id">
+	                or (role = ${id[0]} and rid = ${id[1]})
+	            </foreach>
+	        </if>
+	        <if test="info != null and info!= ''">
+                and (name = #{info} or phonenumber = #{info} or equipnumber = #{info})
+            </if>
+	    </where>
+	</select>
+	<select id="getUserInfoByIds" parameterType="com.welleplus.entity.UserInfoQuery" resultType="com.welleplus.entity.UserInfo">
+	    select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "gps定位器" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,promise from t_user
+	    <where>
+	        <if test="ids!=null and ids!=''">
+	            <foreach collection="ids" item="id" open="(" close=")" separator="or">
+	                (role = ${id[0]} and rid = ${id[1]})
+	            </foreach>
+	        </if>
+	        <if test="info != null and info!= ''">
+                and (name = #{info} or phonenumber = #{info} or equipnumber = #{info})
+            </if>
+	        limit ${page*10},10
+	    </where>
+	</select>
+	
+	<select id="getUserInfoByIdsNew" parameterType="com.welleplus.entity.UserInfoQuery" resultType="com.welleplus.entity.UserInfo">
+	    select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "gps定位器" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,promise from t_user
+	    <where>
+	        <if test="ids!=null and ids!=''">
+	            <foreach collection="ids" item="id" open="(" close=")" separator="or">
+	                (role = ${id[0]} and rid = ${id[1]})
+	            </foreach>
+	        </if>
+	    </where>
+	</select>
+    
+    <select id="getwatchgpsByImei" parameterType="string" resultType="map">
+        select id,imei,date,time,longitude,latitude,altitude,address,elec from eqwatchgps where imei=#{imei} and to_days(DateCreated) = to_days(now()) order by id desc limit 1
+    </select>
+    
+    <select id="getwatchheartByImei" parameterType="string" resultType="map">
+        select id,imei,heartrate from eqwatchheart where imei=#{imei} order by id desc limit 1
+    </select>
+    
+    <select id="getwatchdataByImei" parameterType="string" resultType="map">
+        select id,imei,xloc,yloc,watch_date as watchdate,address,bat from map_watch_data_act where imei=#{imei} and to_days(watch_date) = to_days(now()) order by id desc limit 1
+    </select>
+    
+    <select id="getappdataByImei" parameterType="string" resultType="map">
+        select id,xloc,yloc,watchtime,address from t_phonelocation where phonenumber=#{imei} and to_days(watchtime) = to_days(now()) order by watchtime desc limit 1
+    </select>
+    
+    <select id="getwatchwarningByImei" parameterType="string" resultType="map">
+        select id,imei,type,case type when 1 then "sos" when 2 then "摔倒" when 10 then "低电量" else "" end as typeStr,datecreated from eqwatchwarning where imei = #{imei} order by datecreated desc limit 1
+    </select>
+    
+    <select id="getwatchgpsByImeiAndDateTime" parameterType="map" resultType="map">
+        select id,imei,date,time,longitude,latitude,longitudeconv,latitudeconv,altitude,address,elec from eqwatchgps where imei=#{imei} and date=#{date} and time = #{time} order by id desc limit 1
+    </select>
+    
+    <select id="getwatchwarningByDate" parameterType="map" resultType="com.welleplus.entity.WatchWarning">
+        select id,imei,type,case type when 1 then "sos" when 2 then "摔倒" when 10 then "低电量" else "" end as typeStr,DATE_FORMAT(datecreated,'%Y-%m-%d %H:%i:%s') as datecreated from eqwatchwarning 
+        <where>
+            imei = #{imei}
+            <if test="startdate!=null and startdate!= '' and enddate!=null and enddate!= ''">
+                and datecreated &gt;= #{startdate} and datecreated &lt;= #{enddate}
+            </if>
+        </where>
+        order by datecreated desc
+    </select>
+    
+<!--     根据用户id修改头像地址 -->
+	<update id="updateImgsrc" parameterType="Map">
+	    update t_user set imgsrc=#{imgsrc} where id = #{id}
+	</update>
+	
+<!-- 	根据用户id获取头像地址 -->
+	<select id="getImgsrcById" parameterType="Long" resultType="String">
+	    select imgsrc from t_user where id = #{id}
+	</select>
+	
+<!-- 	根据rid获取用户信息 -->
+	<select id="getUserInfosByIds" resultType="com.welleplus.entity.UserInfo" parameterType="Map">
+	    select id,imgsrc,userName,password,IF(sex='0','女',IF(sex='1','男','未知')) as
+        sex,role,phonenumber,email,name,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as
+        creatdate,rid,worktype,case worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+        equiptype,case equiptype when 0 then "手表" when 1 then "gps定位器" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,equipnumber,equipstate,case equipstate when 1 then "是" else "否" end as
+        equipStateStr,DATE_FORMAT(getdate,'%Y-%m-%d') as getdate,IF(promise=1,'管理员','普通员工') as promiseStr
+	     from t_user 
+	     <where>
+	         role= 4 and equiptype = 1 and equipnumber is not null and rid in 
+	         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+	        	#{item}
+	    	</foreach>
+	    	<if test="info!=null and info!=''">
+	    	    and (name like'%${info}%' or equipnumber like '%${info}%' or phonenumber like '%${info}%')
+	    	</if>
+	     </where>
+	    limit ${page*10},10
+	</select>
+	
+<!-- 	根据rid获取用户数量 -->
+	<select id="getUserInfosCountByIds" resultType="Long" parameterType="Map">
+	    select count(*) from t_user 
+	    <where>
+	         role= 4 and equiptype = 1 and equipnumber is not null and rid in 
+	         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+	        	#{item}
+	    	</foreach>
+	    	<if test="info!=null and info!=''">
+	    	    and (name like'%${info}%' or equipnumber like '%${info}%' or phonenumber like '%${info}%')
+	    	</if>
+	     </where>
+	</select>
+	
+<!-- 	查询电话号码和设备编号是否存在 -->
+	<select id="getUserCoutnByNumber" resultType="Long" parameterType="Map">
+	    select count(*) from t_user 
+	    <where>
+	        <if test="phoneNumber!=null and phoneNumber!=''">
+	            phonenumber = #{phoneNumber}
+	        </if>
+	        <if test="equipNumber!=null and equipNumber!=''">
+	            or equipnumber = #{equipNumber}
+	        </if>
+	    </where>
+	</select>
+	
+	
+<!-- 	位置分析统计 -->
+	<select id="getUserInfoAndPosition" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Map">
+	    select u.name,u.worktype,case u.worktype when 0 then "其他" when 1 then "农民工" when 2 then "安全人员" when 3 then "管理人员" else "" end as worktypeStr,
+	    u.phonenumber,u.equiptype,case u.equiptype when 0 then "手表" when 1 then "gps定位器" when 2 then "app" when 3 then
+        "rfid" else "" end as equipTypeStr,u.equipnumber,m.Bat,m.watch_date,DATE_FORMAT(m.watch_date,'%Y-%m-%d %H:%i:%s') as watchDateStr,m.address from t_user as u,map_watch_data_act as m 
+	    <where>
+	        u.equipnumber = m.imei 
+	        <if test="ids!=null and ids!=''">
+	            and 
+	            <foreach collection="ids" item="id" open="(" close=")" separator="or">
+	                (u.role = ${id[0]} and u.rid = ${id[1]}) 
+	            </foreach>
+	        </if>
+	        <if test="info!=null and info!=''">
+	            and (u.name like '%${info}%' or u.phonenumber like '%${info}%' or u.equipnumber like '%${info}%')
+	        </if>
+	        <if test="worktype!=null and worktype!=4">
+	            and u.worktype = #{worktype}
+	        </if>
+	        <if test="equiptype!=null and equiptype!=4">
+	            and u.equiptype = #{equiptype}
+	        </if>
+	        <if test="startdate!=null and startdate!=''">
+	            and m.watch_date >= #{startdate}
+	        </if>
+	        <if test="enddate!=null and enddate!=''">
+	            and m.watch_date &lt;= #{enddate}
+	        </if>
+	    </where>
+	    order by m.watch_date desc limit ${page*10},10
+	    
+	</select>
+	
+	<select id="getCountUserInfoAndPosition" parameterType="com.welleplus.entity.UserInfoQuery" resultType="Long">
+	    select count(*) from t_user as u,map_watch_data_act as m 
+	    <where>
+	        u.equipnumber = m.imei 
+	        <if test="ids!=null and ids!=''">
+	            and 
+	            <foreach collection="ids" item="id" open="(" close=")" separator="or">
+	                (u.role = ${id[0]} and u.rid = ${id[1]}) 
+	            </foreach>
+	        </if>
+	        <if test="info!=null and info!=''">
+	            and (u.name like '%${info}%' or u.phonenumber like '%${info}%' or u.equipnumber like '%${info}%')
+	        </if>
+	        <if test="worktype!=null and worktype!=4">
+	            and u.worktype = #{worktype}
+	        </if>
+	        <if test="equiptype!=null and equiptype!=4">
+	            and u.equiptype = #{equiptype}
+	        </if>
+	        <if test="startdate!=null and startdate!=''">
+	            and m.watch_date >= #{startdate}
+	        </if>
+	        <if test="enddate!=null and enddate!=''">
+	            and m.watch_date &lt;= #{enddate}
+	        </if>
+	    </where>
+	    
+	</select>
+	
+<!-- 	查询应出勤人数 -->
+<!-- 	总公司管理员 -->
+	<select id="getShouldWorkUser" parameterType="Map" resultType="com.welleplus.entity.UserInfo">
+	    select u.* from t_user as u join t_project as p on u.rid = p.id join t_section as s on p.sid = s.id join t_company as c on s.cid = c.id join t_firm as f on c.fid = f.id where f.id = #{id} and u.role = 4 and u.equiptype=1 and u.equipnumber is not null
+	</select>
+	
+<!-- 	分公司管理员 -->
+	<select id="getShouldWorkUserFromCompany" parameterType="Map" resultType="com.welleplus.entity.UserInfo">
+	    select u.* from t_user as u join t_project as p on u.rid = p.id join t_section as s on p.sid = s.id join t_company as c on s.cid = c.id where c.id = #{id} and u.role = 4 and u.equiptype=1 and u.equipnumber is not null
+	</select>
+	
+<!-- 	部门管理员 -->
+	<select id="getShouldWorkUserFromSection" parameterType="Map" resultType="com.welleplus.entity.UserInfo">
+	    select u.* from t_user as u join t_project as p on u.rid = p.id join t_section as s on p.sid = s.id where s.id = #{id} and u.role = 4 and u.equiptype=1 and u.equipnumber is not null
+	</select>
+	
+<!-- 	分组管理员 -->
+	<select id="getShouldWorkUserFromProject" parameterType="Map" resultType="com.welleplus.entity.UserInfo">
+	    select * from t_user where role = 4 and rid = #{id} and u.equiptype=1 and u.equipnumber is not null
+	</select>
+	
+<!-- 	查询实际出勤人数 -->
+	<select id="getActWorkCount" parameterType="Map" resultType="Long">
+	    select count(*) from map_watch_data_act where id in (select min(id) from map_watch_data_act where imei in 
+	    <foreach collection="infos" item="info" open="(" close=")" separator=",">
+	        <if test="info.equipnumber!=null and info.equipnumber!=''">
+	        	#{info.equipnumber}
+	        </if>
+	    </foreach>
+	    and to_days(watch_date) = to_days(now()) group by imei)
+	</select>
+
+<!-- 查询迟到人数 -->
+	<select id="getlateWorkCount" parameterType="Map" resultType="Long">
+	    select count(*) from map_watch_data_act where id in (select min(id) from map_watch_data_act where imei in 
+	    <foreach collection="infos" item="info" open="(" close=")" separator=",">
+	        <if test="info.equipnumber!=null and info.equipnumber!=''">
+	            #{info.equipnumber}
+	        </if>
+	        
+	    </foreach>
+	    and to_days(watch_date) = to_days(now()) group by imei) and watch_date >= #{date}
+	</select>
+
+</mapper>

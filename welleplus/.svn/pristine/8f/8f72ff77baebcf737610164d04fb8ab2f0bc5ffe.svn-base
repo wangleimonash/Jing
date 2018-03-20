@@ -1,0 +1,232 @@
+<div>
+	<div class="col-md-12 col-sm-6 col-xs-12">
+			<!-- 			<h2>APP出勤历史记录</h2> -->
+			<div class="x_panel">
+				<div class="container">
+					<div class="row">
+						
+						<div class="col-xs-3">
+						<div class="col-xs-3 zTreeDemoBackground">
+							<ul id="tree" class="ztree"
+								style="font-size: 15px; padding-left: 0px"></ul>
+						</div>
+						</div>
+						<div class="col-xs-9">
+							<div class="row">
+
+				                <div class="col-sm-3">
+				                    <div class="form-group">
+				                        <div class="input-group date" id="myDatepicker" style="width:100%">
+				                            <select ng-model="engineer.currentActivity"
+												ng-options="act for act in activities"
+												class = "form-control">
+											</select>
+				                        </div>
+				                    </div>
+				                </div>
+				                
+				                 <div class="col-sm-3">
+				                    <div class="form-group">
+				                        <div class="input-group date" id="myDatepicker3" style="width:100%">
+				                            <input
+												class="form-control" name="q" type="search"
+												autofocus="" autocomplete="off"
+												placeholder="姓名或设备编号或电话" id="type2" ng-model="treeuser.type2">
+				                        </div>
+				                    </div>
+				                </div>
+				                
+				                <div class="col-sm-3">
+				                    <div class="form-group">
+				                        <div class="input-group date" id="myDatepicker4" style="width:100%">
+				                            <input
+												type="text" placeholder="起始时间" id="startdate"
+												ng-model="treeuser.startdate"
+												class="form-control">
+				                        </div>
+				                    </div>
+				                </div>
+				                
+				                 <div class="col-sm-3">
+				                    <div class="form-group">
+				                        <div class="input-group date" id="datetimepicker6" style="width:100%">
+				                            <input
+												type="text" placeholder="结束时间" id="enddate"
+												ng-model="treeuser.enddate"
+												class="form-control">
+				                        </div>
+				                    </div>
+				                </div>
+				                <div class="clearfix"></div>
+				                <div class="col-sm-3 pull-right">
+				                	<div class="form-group">
+				                		<span class="input-group-btn">
+						                    <button type="button" class="btn btn-primary pull-right" ng-click="searchInfo()">查询</button>
+						                </span>
+				                	</div>
+				                </div>
+				                
+				                
+				            </div>
+						
+						
+<!-- 						<div class="col-md-2"> -->
+<!-- 							<select ng-model="engineer.currentActivity" -->
+<!-- 								ng-options="act for act in activities" -->
+<!-- 								style="width: 150px; height: 30px"> -->
+<!-- 							</select> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-xs-2" style="padding-left: 60px;"> -->
+<!-- 						<span class="typeahead__query"> <span -->
+<!-- 							class="typeahead__cancel-button"></span><span -->
+<!-- 							class="typeahead__cancel-button"></span><input -->
+<!-- 							class="js-typeahead ng-pristine ng-valid" name="q" type="search" -->
+<!-- 							autofocus="" autocomplete="off" -->
+<!-- 							style="border: 1px solid #ddd; height: 30px; width: 150px;" -->
+<!-- 							placeholder="姓名或设备编号或电话" id="type2" ng-model="treeuser.type2"> -->
+<!-- 						</span> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2" style="padding-left: 100px;"> -->
+<!-- 							<div class="input-group input-group-sm"> -->
+<!-- 								<input -->
+<!-- 									style="border: 1px solid #ddd; height: 30px; padding: 6px 12px;" -->
+<!-- 									type="text" placeholder="起始时间" id="startdate" -->
+<!-- 									ng-model="treeuser.startdate" lay-key="5" -->
+<!-- 									class="ng-pristine ng-valid"> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2" style="padding-left: 150px;"> -->
+<!-- 							<div class="input-group input-group-sm"> -->
+<!-- 								<input -->
+<!-- 									style="border: 1px solid #ddd; height: 30px; padding: 6px 12px;" -->
+<!-- 									type="text" placeholder="结束时间" id="enddate" -->
+<!-- 									ng-model="treeuser.enddate" lay-key="6" -->
+<!-- 									class="ng-pristine ng-valid"> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<br><br> -->
+<!-- 						<div class="col-md-2" > -->
+<!-- 							<div class="pull-right"> -->
+<!-- 								<button type="button" class="btn btn-primary" -->
+<!-- 									ng-click="searchInfo()">查询</button> -->
+<!-- 							</div> -->
+
+<!-- 						</div> -->
+						
+						<div class="row" >
+				<div class="col-md-12">
+					<table class="table table-striped table-bordered">
+						<thead>
+							<tr>
+								<th class="col-md-1">序号</th>
+								<th class="col-md-1">日期</th>
+								<th class="col-md-1">姓名</th>
+								<th class="col-md-1">电话</th>
+								<th class="col-md-1">工种</th>
+								<th class="col-md-1">出勤天数</th>
+								<th class="col-md-1">迟到</th>
+								<th class="col-md-1">早退</th>
+								<th class="col-md-1">矿工</th>
+								<th class="col-md-1">详细</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="t in userinfos">
+								<td>{{$index+1}}</td>
+								<td style="display: none;">{{t.id}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.App_Month}}</td>
+								<td style="word-wrap: break-word;">{{t.name}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" >{{t.phonenumber}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.worktype}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.App_Attendance}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.App_Late}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.App_Leaveearly}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.App_Miner}}</td>
+								<td align="center">
+									<!-- 						<button type="button" class="btn btn-dark" ng-click="userEdit(id)">......</button> -->
+									<button class="btn-1 btn-dark" data-toggle="modal"
+										data-target="#myModal" ng-click="whereshow(t.phonenumber)" style="margin: 0px;margin-top: -2;" >详细</button>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+<!-- 			--- -->
+					<div class="box-tools pull-left" style="font-family:'黑体'">
+		            	<span class="pagination pagination-sm inline">总数:{{count}}</span>
+		            </div>
+<!--                     分页 -->
+                    <div class="box-tools pull-right">
+						<div id="Pagination"></div>
+		            </div>
+<!-- 		            ---	 -->
+					</div>
+					</div>
+					<!-- ------- -->
+				</div>
+				<br>
+
+
+
+			
+			<br>
+			<!-- ------------------------------------------------ -->
+			<div class="row" ng-if="isshow">
+				<div class="col-md-12">
+					<br>
+					<table class="table table-striped table-bordered">
+						<thead>
+							<tr>
+								<th class="col-md-1">姓名</th>
+								<th class="col-md-1">签到时间</th>
+								<th class="col-md-1">经度</th>
+								<th class="col-md-1">纬度</th>
+								<th class="col-md-1">备注</th>
+								<th class="col-md-1">地址</th>
+								<th class="col-md-1">签到类型</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="t in as">
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.username}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.realtime}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.xloc}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.yloc}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.remark}}</td>
+								<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.address}}</td>
+									<td
+									style="word-wrap: break-word; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.lo}}</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+				
+				<!-- 			--- -->
+					<div class="box-tools pull-left" style="font-family:'黑体'">
+		            	<span class="pagination pagination-sm inline">总数:{{oncilkepage}}</span>
+		            </div>
+<!--                     分页 -->
+                    <div class="box-tools pull-right">
+						<div id="Pagination1"></div>
+		            </div>
+<!-- 		            ---	 -->
+				
+			</div>	
+			</div>
+		<!-- 				------------------------------------------------ -->
+	</div>
+</div>

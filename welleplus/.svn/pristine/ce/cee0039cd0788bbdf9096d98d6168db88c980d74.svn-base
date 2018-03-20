@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" ng-controller="parentCtrl">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>位置精灵管理平台</title>
+    <!--title图标-->
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+    <!-- Bootstrap -->
+    <link href="vendors/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="vendors/font-awesome/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="vendors/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="vendors/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="vendors/bootstrap-progressbar-3.3.4.min.css"
+          rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="vendors/jqvmap.min.css" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="vendors/daterangepicker.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="build/css/custom.min.css" rel="stylesheet">
+<!--     <link href="css/zTreeStyle/zTreeStyle.css" rel="stylesheet"> -->
+    <link rel="stylesheet" type="text/css" href="css/map/map.css">
+    <link rel="stylesheet" type="text/css" href="css/map/main1119.css">
+    <link rel="stylesheet" type="text/css" href="css/map/location.css">
+    <link rel="stylesheet" type="text/css" href="laydate/default/laydate.css">
+    <link rel="stylesheet" type="text/css" href="css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/src/jquery.typeahead.css">
+    <link rel="stylesheet" type="text/css" href="css/pagination.css">
+    
+    
+<!--     <link rel="stylesheet" type="text/css" href="build/css/custom.min.css"> -->
+        <!-- 引入 ECharts 文件 -->
+    <script src="js/echa/echarts.simple.min.js"></script>
+    <script src="js/echa/echarts.min.js"></script>
+    
+    <script src="laydate/laydate.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/angular-ui-router.min.js"></script>
+    <script src="index.js"></script>
+    <style>
+    
+        a {
+            cursor: pointer
+        }
+        .amap-marker .marker-route {
+            position: absolute;
+            width: 40px;
+            height: 44px;
+            color: #e90000;
+            background: url(http://webapi.amap.com/theme/v1.3/images/newpc/poi-1.png) no-repeat;
+            cursor: pointer;
+        }
+        .amap-marker .marker-marker-bus-from {
+            background-position: -334px -180px;
+        }
+        .amap-marker .marker-marker-bus-end {
+            background-position: -334px -135px;
+
+        }
+        .table {
+        	width:100%;
+        	margin-left:0
+        }
+        #container{
+        	left:0px
+        }
+        th{
+        	text-align:center
+        }
+        body tr td{
+        	font-family: "Helvetica Neue",Roboto,Arial,"Droid Sans",sans-serif
+        }
+        span{
+        	font-family: "Helvetica Neue",Roboto,Arial,"Droid Sans",sans-serif
+        }
+        .nav_menu{
+        	border-bottom: 0px;
+        	margin-bottom: 0px;
+        }
+        .col-sm-2{
+        	width:12%
+        }
+        td{
+        	text-align:center;
+        	padding:0px;
+        	margin: 0px;
+        }
+        .ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+    </style>
+</head>
+
+<!--   <body class="nav-md" oncontextmenu=self.event.returnValue=false> -->
+<body class="nav-md" style="background:#f7f7f7">
+<div class="container body">
+    <div class="main_container">
+        <div class="col-md-3 left_col">
+            <div class="left_col scroll-view" style="min-height:{{leftheight}}">
+                <div class="navbar nav_title" style="border: 0;">
+                    <a href="#" class="site_title"><img style="height:30px;width:30px" src="images/position.png">
+                        <span style="font-size:17px">位置精灵管理平台test</span></a>
+                </div>
+
+                <div class="clearfix"></div>
+
+
+                <!-- menu profile quick info -->
+                <div class="profile clearfix">
+                    <div class="profile_pic">
+                        <img src="images/touxiang.png" alt="..."
+                             class="img-circle profile_img">
+                        <div class=""></div>
+                    </div>
+                    <div class="profile_info">
+                        <span>欢迎,</span>
+                        <h2>{{wname}}</h2>
+                    </div>
+                </div>
+                <!-- /menu profile quick info -->
+
+
+                <br/>
+
+                <!-- sidebar menu -->
+                <div id="sidebar-menu"
+                     class="main_menu_side hidden-print main_menu">
+                    <div class="menu_section">
+<!--                         <h3>查看</h3> -->
+                        <ul class="nav side-menu">
+                            <li><a ui-sref="index"><i class="fa fa-home"></i> 首页 </a>
+<!--                                 <ul class="nav child_menu"> -->
+<!--                                     <li><a ui-sref="index">Dashboard</a></li> -->
+<!--                                     <li><a ui-sref="index2">Dashboard2</a></li> -->
+<!--                                     <li><a ui-sref="tree">tree</a></li> -->
+<!--                                 </ul> -->
+                            </li>
+                            <li><a ui-sref="userlocation"><i class="fa fa-map-marker"></i> 实时监控 <span
+                                    class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+<!--                                     <li><a ui-sref="location">实时定位</a></li> -->
+									<li><a ui-sref="location">搜索查询</a></li>
+                                    <li><a ui-sref="warninginfo">紧急告警</a></li>
+                                    <li><a ui-sref="history">历史轨迹</a></li>
+                                    
+<!--                                     <li><a ui-sref="elepenshow">组织架构定位</a></li> -->
+<!--                                     <li><a href="form_validation.html">Form Validation</a></li> -->
+<!--                                     <li><a href="form_wizards.html">Form Wizard</a></li> -->
+<!--                                     <li><a href="form_upload.html">Form Upload</a></li> -->
+<!--                                     <li><a href="form_buttons.html">Form Buttons</a></li> -->
+
+<!--                                     <li><a href="form_advanced.html">Advanced Components</a></li> -->
+<!--                                     <li><a href="form_validation.html">Form Validation</a></li> -->
+<!--                                     <li><a href="form_wizards.html">Form Wizard</a></li> -->
+<!--                                     <li><a href="form_upload.html">Form Upload</a></li> -->
+<!--                                     <li><a href="form_buttons.html">Form Buttons</a></li> -->
+                                </ul>
+                            </li>
+<!--                             <li><a ui-sref="history "><i class="fa fa-deviantart"></i> -->
+<!--                                 历史轨迹 下拉箭头  -->
+<!--                             </a> -->
+                             <!--下级菜单--> <!--<ul class="nav child_menu">-->
+                                <!--<li><a ui-sref="general">General Elements</a></li>-->
+                                <!--<li><a href="media_gallery.html">Media Gallery</a></li>-->
+                                <!--<li><a href="typography.html">Typography</a></li>-->
+                                <!--<li><a href="icons.html">Icons</a></li>-->
+                                <!--<li><a href="glyphicons.html">Glyphicons</a></li>-->
+                                <!--<li><a href="widgets.html">Widgets</a></li>-->
+                                <!--<li><a href="invoice.html">Invoice</a></li>-->
+                                <!--<li><a href="inbox.html">Inbox</a></li>-->
+                                <!--<li><a href="calendar.html">Calendar</a></li>--> <!--</ul>-->
+                            </li>
+                            <li><a ui-sref="elepenshow"><i class="fa fa-table"></i> 电子围栏 <span
+                                    class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <li><a ui-sref="elepen">围栏设定</a></li>
+                                </ul>
+                            </li>
+                            <li><a ui-sref="rfidMaxInfo "><i class="fa fa-rss"></i> RFID考勤 <!-- <span
+                                    class="fa fa-chevron-down"></span> --></a>
+                                <!-- <ul class="nav child_menu">
+                                    <li><a href="chartjs.html">Chart JS</a></li>
+                                    <li><a href="chartjs2.html">Chart JS2</a></li>
+                                    <li><a href="morisjs.html">Moris JS</a></li>
+                                    <li><a href="echarts.html">ECharts</a></li>
+                                    <li><a href="other_charts.html">Other Charts</a></li>
+                                </ul> -->
+                            </li>
+                            <li><a><i class="fa fa-bar-chart-o"></i> 统计分析  <span
+                                    class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                	<li><a ui-sref="equipType">设备类型图表分析</a></li>
+                                	<li><a ui-sref="equipTypeList">设备类型列表分析</a></li>
+                                	<li><a ui-sref="equipLocation">位置分析统计</a></li>
+                                	<li><a ui-sref="fencewarning">电子围栏报警统计</a></li>
+                                	<li><a ui-sref="warningwatch">告警信息管理</a></li>
+                                	<li><a ui-sref="userinfo">人员信息统计</a></li>
+                                    <li><a ui-sref="rfidHistoryInfo">RFID历史数据</a></li>
+<!--                                     <li><a href="fixed_footer.html">Fixed Footer</a></li> -->
+<!--                                      <li><a ui-sref="app_one">APP出勤统计</a></li> -->
+                                    <li><a ui-sref="app_two">APP出勤历史数据</a></li>
+                                    <li><a ui-sref="app_three">APP日志记录</a></li>
+                                </ul>
+                            </li>
+                            <li><a><i class="fa fa-cog"></i> 系统设置 <span
+                                    class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu">
+                                    <li><a ui-sref="user">组织架构</a></li>
+<!--                                     <li><a ui-sref="ztree">zTree</a></li> -->
+<!--                                     <li><a href="project_detail.html">Project Detail</a></li> -->
+<!--                                     <li><a href="contacts.html">Contacts</a></li> -->
+<!--                                     <li><a href="profile.html">Profile</a></li> -->
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+<!--                     <div class="menu_section"> -->
+<!--                         <h3>管理</h3> -->
+<!--                         <ul class="nav side-menu"> -->
+                            
+<!--                             <li><a><i class="fa fa-gears"></i> 设备参数设置 <span -->
+<!--                                     class="fa fa-chevron-down"></span></a> -->
+<!--                                 <ul class="nav child_menu"> -->
+<!--                                     <li><a href="page_403.html">403 Error</a></li> -->
+<!--                                     <li><a href="page_404.html">404 Error</a></li> -->
+<!--                                     <li><a href="page_500.html">500 Error</a></li> -->
+<!--                                     <li><a href="plain_page.html">Plain Page</a></li> -->
+<!--                                     <li><a href="login.html">Login Page</a></li> -->
+<!--                                     <li><a href="pricing_tables.html">Pricing Tables</a></li> -->
+<!--                                 </ul> -->
+<!--                             </li> -->
+<!--                         </ul> -->
+<!--                     </div> -->
+
+                </div>
+                <!-- /sidebar menu -->
+
+                <!-- /menu footer buttons -->
+                <!--             <div class="sidebar-footer hidden-small"> -->
+                <!--               <a data-toggle="tooltip" data-placement="top" title="Settings"> -->
+                <!--                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> -->
+                <!--               </a> -->
+                <!--               <a data-toggle="tooltip" data-placement="top" title="FullScreen"> -->
+                <!--                 <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span> -->
+                <!--               </a> -->
+                <!--               <a data-toggle="tooltip" data-placement="top" title="Lock"> -->
+                <!--                 <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span> -->
+                <!--               </a> -->
+                <!--               <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html"> -->
+                <!--                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span> -->
+                <!--               </a> -->
+                <!--             </div> -->
+                <!-- /menu footer buttons -->
+            </div>
+        </div>
+
+
+        <!-- top navigation -->
+        <div class="top_nav">
+            <div class="nav_menu">
+                <nav>
+                    <div class="nav toggle" style="padding-top:10px">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    </div>
+
+                    <ul class="nav navbar-nav navbar-right" style="height:40px">
+                        <li class=""><a href="javascript:;"
+                                        class="user-profile dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false" style="top:-6px;height:45px"> <i class="fa fa-user fa-3x"></i>&nbsp;{{wusername}}
+                            <span class=" fa fa-angle-down"></span>
+                        </a>
+                            <ul class="dropdown-menu dropdown-usermenu pull-right" style="top:42px">
+<!--                                 <li><a href="javascript:;"> Profile</a></li> -->
+<!--                                 <li><a href="javascript:;"> <span -->
+<!--                                         class="badge bg-red pull-right">50%</span> <span>Settings</span> -->
+<!--                                     <ul class="dropdown-menu dropdown-usermenu pull-right"> -->
+<!--                                         <li><a href="javascript:;"> Profile</a></li> -->
+<!--                                         <li><a href="javascript:;"> <span -->
+<!--                                                 class="badge bg-red pull-right">50%</span> <span>Settings</span> -->
+<!--                                         </a></li> -->
+<!--                                         <li><a href="javascript:;">Help</a></li> -->
+<!--                                         <li><a href="login.html"><i -->
+<!--                                                 class="fa fa-sign-out pull-right"></i> Log Out</a></li> -->
+<!--                                     </ul> -->
+<!--                                 </a> -->
+<!--                                 </li> -->
+<!--                                 <li><a href="javascript:;">Help</a></li> -->
+                                <li><a ng-click="logout()"><i
+                                        class="fa fa-sign-out pull-right"></i> 登出</a></li>
+                            </ul>
+                        </li>
+
+<!--                         <li role="presentation" class="dropdown"><a -->
+<!--                                 href="javascript:;" class="dropdown-toggle info-number" -->
+<!--                                 data-toggle="dropdown" aria-expanded="false"> <i -->
+<!--                                 class="fa fa-envelope-o"></i> <span class="badge bg-green">6</span> -->
+<!--                         </a> -->
+<!--                             <ul id="menu1" class="dropdown-menu list-unstyled msg_list" -->
+<!--                                 role="menu"> -->
+<!--                                 <li><a> <span class="image"><img -->
+<!--                                         src="images/img.jpg" alt="Profile Image"/></span> <span> <span>John -->
+<!-- 													Smith</span> <span class="time">3 mins ago</span> -->
+<!-- 										</span> <span class="message"> Film festivals used to be -->
+<!-- 												do-or-die moments for movie makers. They were where... </span> -->
+<!--                                 </a></li> -->
+<!--                                 <li><a> <span class="image"><img -->
+<!--                                         src="images/img.jpg" alt="Profile Image"/></span> <span> <span>John -->
+<!-- 													Smith</span> <span class="time">3 mins ago</span> -->
+<!-- 										</span> <span class="message"> Film festivals used to be -->
+<!-- 												do-or-die moments for movie makers. They were where... </span> -->
+<!--                                 </a></li> -->
+<!--                                 <li><a> <span class="image"><img -->
+<!--                                         src="images/img.jpg" alt="Profile Image"/></span> <span> <span>John -->
+<!-- 													Smith</span> <span class="time">3 mins ago</span> -->
+<!-- 										</span> <span class="message"> Film festivals used to be -->
+<!-- 												do-or-die moments for movie makers. They were where... </span> -->
+<!--                                 </a></li> -->
+<!--                                 <li><a> <span class="image"><img -->
+<!--                                         src="images/img.jpg" alt="Profile Image"/></span> <span> <span>John -->
+<!-- 													Smith</span> <span class="time">3 mins ago</span> -->
+<!-- 										</span> <span class="message"> Film festivals used to be -->
+<!-- 												do-or-die moments for movie makers. They were where... </span> -->
+<!--                                 </a></li> -->
+<!--                                 <li> -->
+<!--                                     <div class="text-center"> -->
+<!--                                         <a> <strong>See All Alerts</strong> <i -->
+<!--                                                 class="fa fa-angle-right"></i> -->
+<!--                                         </a> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </li> -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <!--         <div ng-include="'html/head.html'"></div> -->
+
+        <!-- /top navigation -->
+
+
+        <div class="right_col" style="min-height:{{mainheight}};padding:0px"
+             ui-view=""></div>
+
+
+        <!-- footer content -->
+        <footer>
+            <div class="pull-right">
+                	井深信息科技（上海）有限公司 
+            </div>
+            <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+    </div>
+</div>
+<script type="text/javascript"
+            src="http://webapi.amap.com/maps?v=1.3&key=5c87838663300f4e7430a79582b0dc93&plugin=AMap.Autocomplete,AMap.PlaceSearch,AMap.MarkerClusterer"></script>
+<!--     <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script> -->
+    <script type="text/javascript" src="js/addToolBar.js"></script>
+    <!--<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>-->
+    <!--<script src="layui/layui.all.js"></script>-->
+    <script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.10"></script>
+
+<!-- jQuery -->
+<script src="vendors/js/jquery.min.js"></script>
+<script src="js/cookie.js"></script>
+
+<script src="js/jquery.ztree.all-3.5.min.js"></script>
+<script src="js/jquery.ztree.core-3.5.min.js"></script>
+<script src="js/jquery.ztree.excheck-3.5.min.js"></script>
+<script src="js/jquery.ztree.exedit-3.5.min.js"></script>
+
+<script src="js/jquery.pagination.js"></script>
+
+<!-- Bootstrap -->
+<script src="vendors/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="vendors/js/fastclick.js"></script>
+<!-- NProgress -->
+<script src="vendors/js/nprogress.js"></script>
+<!-- Chart.js -->
+<script src="vendors/js/Chart.min.js"></script>
+<!-- gauge.js -->
+<script src="vendors/js/gauge.min.js"></script>
+<!-- bootstrap-progressbar -->
+<script src="vendors/js/bootstrap-progressbar.min.js"></script>
+<!-- iCheck -->
+<script src="vendors/js/icheck.min.js"></script>
+<!-- Skycons -->
+<script src="vendors/js/skycons.js"></script>
+<!-- Flot -->
+<script src="vendors/js/jquery.flot.js"></script>
+<script src="vendors/js/jquery.flot.pie.js"></script>
+<script src="vendors/js/jquery.flot.time.js"></script>
+<script src="vendors/js/jquery.flot.stack.js"></script>
+<script src="vendors/js/jquery.flot.resize.js"></script>
+<!-- Flot plugins -->
+<script src="vendors/js/jquery.flot.orderBars.js"></script>
+<script src="vendors/js/jquery.flot.spline.min.js"></script>
+<script src="vendors/js/curvedLines.js"></script>
+<!-- DateJS -->
+<script src="vendors/js/date.js"></script>
+<!-- JQVMap -->
+<script src="vendors/js/jquery.vmap.js"></script>
+<script src="vendors/js/jquery.vmap.world.js"></script>
+<script src="vendors/js/jquery.vmap.sampledata.js"></script>
+<!-- bootstrap-daterangepicker -->
+<script src="vendors/js/moment.min.js"></script>
+<script src="vendors/js/daterangepicker.js"></script>
+<script src="css/src/jquery.typeahead.js"></script>
+
+
+<script src="vendors/skycons/skycons.js"></script>
+
+
+<!-- Custom Theme Scripts -->
+<script src="build/js/custom.min.js"></script>
+
+<script src="controller/user/UserCtrl.js"></script>
+<script src="server/user/UserServer.js"></script>
+
+<script src="controller/tree/treeCtrl.js"></script>
+<script src="server/project/ProjectServer.js"></script>
+<script src="server/company/CompanyServer.js"></script>
+<script src="server/section/SectionServer.js"></script>
+<script src="controller/map/historyCtrl.js"></script>
+<script src="controller/map/locationCtrl.js"></script>
+<script src="controller/map/orglocationCtrl.js"></script>
+<script src="server/map/historyServer.js"></script>
+<script src="server/map/locationServer.js"></script>
+<script src="controller/ztreeCtrl.js"></script>
+<script src="controller/elepen/elepenCtrl.js"></script>
+<script src="controller/echarts/Ec-Cake.js"></script>
+<script src="controller/echarts/Ec-Linear.js"></script>
+<script src="controller/app/app_oneCtrl.js"></script>
+<script src="controller/app/app_twoCtrl.js"></script>
+<script src="controller/app/app_threeCtrl.js"></script>
+<script src="server/app/app_oneSer.js"></script>
+<script src="server/app/app_twoSer.js"></script>
+<script src="server/app/app_threeSer.js"></script>
+<script src="controller/rfid/rfidMaxCtrl.js"></script>
+<script src="server/rfid/rfidMaxServer.js"></script>
+<script src="server/fence/fenceServer.js"></script>
+<script src="controller/rfid/rfidHistoryCtrl.js"></script>
+<script src="server/rfid/rfidHistoryServer.js"></script>
+<script src="controller/elepen/elepenshowCtrl.js"></script>
+<script src="server/warning/WarningServer.js"></script>
+<script src="controller/warning/WarningCtrl.js"></script>
+<script src="controller/equiptype/equipTypeCtrl.js"></script>
+<script src="controller/equiptype/equipTypeListCtrl.js"></script>
+<script src="server/equiptype/equipTypeListServer.js"></script>
+<script src="controller/equiptype/equipLocationCtrl.js"></script>
+<script src="server/equiptype/equipLocationServer.js"></script>
+<script src="server/equiptype/equipTypeServer.js"></script>
+<script src="controller/user/UserInfoCtrl.js"></script>
+<script src="controller/dashboard/DashboardCtrl.js"></script>
+<script src="server/dashboard/DashBoardSer.js"></script>
+<script src="controller/map/userlocationCtrl.js"></script>
+<script src="controller/map/warninginfoCtrl.js"></script>
+<script src="controller/warning/warningwatchCtrl.js"></script>
+
+<script>
+    // document.domain = "caibaojian.com";
+    // 	    function setIframeHeight(iframe) {
+    // 		    if (iframe) {
+    // 		    	var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+    // 			    if (iframeWin.document.body) {
+    // 			    	iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+    // 			    }
+    // 		    }
+    // 	    };
+
+    // 	    window.onload = function () {
+    // 	    	setIframeHeight(document.getElementById('myiframe'));
+    // 	    };
+
+    // 	    function IFrameResize(){
+    // 	    	//alert(this.document.body.scrollHeight); //弹出当前页面的高度
+    // 	    	var obj = parent.document.getElementById("myiframe"); //取得父页面IFrame对象
+    // 	    	//alert(obj.height); //弹出父页面中IFrame中设置的高度
+    // 	    	obj.height = this.document.body.scrollHeight; //调整父页面中IFrame的高度为此页面的高度
+    // 	    }
+
+    $("li li").click(function (e) {
+        $("li li").removeClass("active");
+        console.log(e.target);
+        var object = e.target;
+        $(object).parent().addClass("active");
+    });
+
+    app.controller("parentCtrl", function ($scope,$rootScope) {
+        var username = getCookie("welleplususername");
+        var wrole = getCookie("welleplusrole");
+        var wrid = getCookie("welleplusrid");
+        var wuid = getCookie("welleplusuid");
+        $rootScope.wname = getCookie("welleplusname");
+        if (username == null || username == ""
+        		|| wrole == null || wrole == ""
+        		|| wrid == null || wrid == ""
+        		|| wuid == null || wuid == "") {
+            window.location.href = "login.html";
+        }
+        $scope.wusername = username;
+
+        $scope.logout = function () {
+            SetCookie("welleplususername", "");
+            SetCookie("welleplusrole","");
+            SetCookie("welleplusrid","");
+            SetCookie("welleplusuid","");
+            SetCookie("welleplusname","");
+            window.location.href = "login.html";
+        }
+        
+        $rootScope.leftheight = "676px";
+        $rootScope.mainheight = "632px";
+        
+        
+        
+    });
+    
+    function clicka(){
+    	var fromlocation = getCookie("welleplusfromlocation");
+		if(fromlocation==null){
+			addCookie("welleplusfromlocation",1,2);
+		}else{
+			SetCookie("welleplusfromlocation",1);
+		}
+		window.location.href="main.html#/history";
+    }
+    
+    
+    
+    
+    
+</script>
+
+</body>
+</html>

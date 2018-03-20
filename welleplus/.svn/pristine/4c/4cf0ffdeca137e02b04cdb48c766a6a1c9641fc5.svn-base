@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+
+    <title>登录 </title>
+
+    <!-- Bootstrap -->
+    <link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Animate.css -->
+<!--     <link href="vendors/animate.css/animate.min.css" rel="stylesheet"> -->
+
+    <!-- Custom Theme Style -->
+    <link href="build/css/custom.min.css" rel="stylesheet">
+    <script type="text/javascript" src="vendors/js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/cookie.js"></script>
+	<style>
+		.login_content{
+			text-shadow:0 0px 0 #000
+		}
+	</style>
+	
+  </head>
+
+  <body style="background-color:#3f4850">
+    <div class="login">
+<!--       <a class="hiddenanchor" id="signup"></a> -->
+<!--       <a class="hiddenanchor" id="signin"></a> -->
+
+      <div class="login_wrapper">
+        <div class="form login_form">
+          <section class="login_content">
+            <form>
+              <h1 style="color:#fff">位置精灵管理平台</h1>
+              <div>
+                <input id="name" type="text" class="form-control" placeholder="用户名"/>
+              </div>
+              <div>
+                <input id="pwd" type="password" class="form-control" placeholder="密码"/>
+              </div>
+              <div>
+<!--               	<span class="errorword" id="msg"></span> -->
+				<input id="loginbutton" class="btn btn-default" type="button" style="width:106px;margin-right:-224px;" value="登录">
+<!--                 <a id="loginbutton" class="btn btn-default" style="width:106px;margin-right:-244px;">登录</a> -->
+<!--                 <button id="login" class="btn btn-default">登录</button> -->
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                <div class="clearfix"></div>
+                <br />
+
+                <div style="color:#fff">
+                  <h2><img style="height:30px;width:30px" src="images/favicon.ico"> 井深信息科技(上海)有限公司</h2>
+                  <div style="font-size:12px"><span style="margin-left:16px">© 2017 井深 </span><span style="position: absolute;bottom:6px;left:141px">&#174;</span>  <span> &nbsp;&nbsp;&nbsp;  ALL RIGHTS RESERVED</span></div>
+                </div>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="js/login.js"></script>
+</html>

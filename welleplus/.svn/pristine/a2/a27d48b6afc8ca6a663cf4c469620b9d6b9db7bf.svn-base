@@ -1,0 +1,852 @@
+app.controller('treeCtrl',function($scope,$rootScope,projectService,companyServer,sectionServer,userServer){
+	$rootScope.leftheight = "683px";
+	$rootScope.edituser = {};
+	$scope.tree = {};
+	$scope.user = {};
+//	$scope.user.worktype = 0;
+//	$scope.user.equiptype = 0;
+//	$scope.user.equipstate = 1;
+	$rootScope.userquery={};
+	$rootScope.useruser = {};
+	$scope.user.sex = "1";
+	$scope.user.promise = 0;
+	$scope.user.worktype = 0;
+//	$scope.user.role="";
+	$scope.message;
+	$rootScope.showcontext = false;
+	$scope.isshowcontentinfo = false;
+	$scope.user.equipstate = 1;
+	$rootScope.indexPage = 0;
+	
+	$scope.treeuser = {};
+	$scope.treeuser.userName = getCookie("welleplususername");
+	$scope.treeuser.role = getCookie("welleplusrole");
+	$scope.treeuser.rid = getCookie("welleplusrid");
+	$scope.treeuser.id = getCookie("welleplusuid");
+	
+	$scope.excelDesc = null;
+	$scope.excelDescId = null;
+	
+//	userServer.getRoles().then(function(data){
+//		$scope.roles = data.roles1;
+//	});
+	
+	
+	$scope.selected = [] ;
+    $scope.isChecked = function(id){
+//        return $scope.defids.indexOf(id) >= 0 ;  
+        return true;
+    } ;  
+    $scope.updateSelection = function($event,id){
+        var checkbox = $event.target ;  
+        var checked = checkbox.checked ;  
+        if(checked){  
+            $scope.selected.push(id) ;  
+        }else{  
+            var idx = $scope.selected.indexOf(id) ;  
+            $scope.selected.splice(idx,1) ;  
+        }  
+    } ; 
+    
+    function pageselectCallback(page_index, jq){
+    	$rootScope.userquery.page = page_index;
+		userServer.getUserInfo($rootScope.userquery).then(function(data){
+			$rootScope.count = data.count;
+			$rootScope.userinfos = data.data;
+			$rootScope.indexPage = page_index;
+		});
+        return false;
+    }
+    
+    function getOptionsFromForm(){
+        var opt = {callback: pageselectCallback};
+        opt.prev_text = "<<";
+        opt.next_text = ">>";
+        opt.items_per_page=10;
+        opt.num_display_entries=4;
+        opt.num_edge_entries=2;
+        return opt;
+    }
+    
+    function setEdit() {
+		zTree = $.fn.zTree.getZTreeObj("tree");
+		zTree.setting.edit.showRemoveBtn = true;
+		zTree.setting.edit.showRenameBtn = true;
+		zTree.setting.edit.removeTitle = true;
+		zTree.setting.edit.renameTitle = true;
+		zTree.setting.edit.removeTitle = "移除";
+		zTree.setting.edit.renameTitle = "修改";
+    }
+	
+    var setting = {}
+    if($scope.treeuser.role == 0 || $scope.treeuser.role == 1){
+    	setting = {
+//    			view: {
+//    				dblClickExpand : false,
+//    				showIcon: true
+//    			},
+    			edit: {
+    				enable: true,
+    			},
+    			data: {
+    				simpleData: {
+    					enable: true
+    				}
+    			},
+    			callback: {
+    				onClick: onClick,
+    				beforeRemove: beforeRemove,
+    				beforeRename: beforeRename,
+    				onRemove: onRemove,
+    				onRename: onRename
+    			}
+    		};
+    }else{
+    	setting = {
+//    			view: {
+//    				dblClickExpand : false,
+//    				showIcon: true
+//    			},
+//    			edit: {
+//    				enable: true,
+//    			},
+    			data: {
+    				simpleData: {
+    					enable: true
+    				}
+    			},
+    			callback: {
+    				onClick: onClick,
+    				beforeRemove: beforeRemove,
+    				beforeRename: beforeRename,
+    				onRemove: onRemove,
+    				onRename: onRename
+    			}
+    		};
+    }
+	
+	//构造树形结构组织
+	projectService.getTreeInfo($scope.treeuser).then(function(data){
+		$scope.zNodes = data;
+		$.fn.zTree.init($("#tree"), setting, $scope.zNodes);
+		setEdit();
+	});
+	function showIconForTree(treeId, treeNode) {
+		return !treeNode.isParent;
+	};
+//	$scope.treeNode1 = null;
+	function onClick(event, treeId, treeNode, clickFlag) {
+		$scope.excelDesc = treeNode.desc;
+		$scope.excelDescId = treeNode.descId;
+		
+		$scope.role = treeNode.desc;
+		var zTree = $.fn.zTree.getZTreeObj("tree");
+		treeNode1 = treeNode;
+		console.log(treeNode);
+		zTree.expandNode(treeNode);
+		$rootScope.treeNode1 = treeNode;
+		
+		$scope.message = treeNode.name;
+		
+		excelDesc = treeNode.desc;
+		excelDescId = treeNode.descId;
+		
+//		$scope.excelDesc = treeNode.desc;
+//		$scope.excelDescId = treeNode.descId;
+//		var obj = event.target;
+//		$(obj).css("font-weight","bold");
+		//获取组织信息
+//		companyServer.getCompanyInfos().then(function(data){
+//			$scope.trees = data.data;
+//		});
+		//获取下级组织
+		projectService.getDownMenu(treeNode.desc,treeNode.descId,$scope.treeuser.role,$scope.treeuser.id,$scope.treeuser.rid).then(function(data){
+			$rootScope.myMenu = data.data;
+			$scope.usercount =data.count;
+			var optInit = getOptionsFromForm();
+	        $("#Pagination").pagination($scope.usercount, optInit);
+			$rootScope.editMenu = data.data;
+			console.log($rootScope.myMenu);
+			if($rootScope.myMenu!=null&&$rootScope.myMenu.length!=0){
+				$scope.user.grade = $rootScope.myMenu[0].grade;
+				$scope.defids = [];
+				for(var i=0;i<$rootScope.myMenu.length;i++){
+					console.log($rootScope.myMenu[i]);
+					$scope.defids.push($rootScope.myMenu[i].id);
+				}
+				$scope.selected = $scope.defids;
+				
+			}
+		});
+		
+		$rootScope.userquery.role = treeNode.desc;
+		$rootScope.userquery.rid = treeNode.descId;
+		$rootScope.useruser.role = treeNode.desc;
+		$rootScope.useruser.rid = treeNode.descId;
+		if($scope.role >= $scope.treeuser.role){
+			//获取人员信息
+			$rootScope.userquery.page = 0;
+			$rootScope.indexPage = 0;
+			userServer.getUserInfo($rootScope.userquery).then(function(data){
+				console.log(data);
+				$rootScope.userinfos = data.data;
+				
+				var optInit = getOptionsFromForm();
+		        $("#Pagination").pagination($scope.usercount, optInit);
+		        
+				$("#setoptions").click(function(){
+		            var opt = getOptionsFromForm();
+		            $("#Pagination").pagination($scope.usercount, opt);
+		        });
+			});
+		}else{
+			$scope.userinfos = null;
+		}
+		
+//		$scope.user.role = treeNode.desc;
+		$rootScope.rid = treeNode.descId;
+//		$scope.user.rid = treeNode.descId;
+		    
+	}
+	
+	function beforeRemove(treeId, treeNode) {
+		if($scope.treeuser.role!=0&&$scope.treeuser.role!=1){
+			alert("您没有权限删除！");
+			return false;
+		}
+		var zTree = $.fn.zTree.getZTreeObj("tree");
+		zTree.selectNode(treeNode);
+		var flag;
+		if(confirm("确认删除 节点 -- " + treeNode.name + " 吗？")){
+//			projectService.deleteTreeNode(treeNode.desc,treeNode.descId).then(function(data){
+//				if(data.state){
+//					flag = true;
+//				}else{
+//					flag = false;
+//				}
+//			});
+			$.ajax({
+				url:"/welleplus/project/deletetreenode.do?desc="+treeNode.desc+"&descId="+treeNode.descId,
+				async:false,
+				success:function(data){
+					if(data.state){
+						alert(data.message);
+						flag = true;
+					}else{
+						alert(data.message);
+						flag = false;
+					}
+				},
+				error:function(){
+					return false;
+				}
+			});
+		}else{
+			return false;
+		};
+		
+		return flag;
+	}
+	
+	function beforeRename(treeId, treeNode, newName, isCancel) {
+		if($scope.treeuser.role!=0&&$scope.treeuser.role!=1){
+			alert("您没有权限修改！");
+			return false;
+		}
+		if (newName.length == 0) {
+			alert("节点名称不能为空.");
+			var zTree = $.fn.zTree.getZTreeObj("tree");
+			setTimeout(function(){zTree.editName(treeNode)}, 10);
+			return false;
+		}
+		if(confirm("确认修改 节点 -- " + treeNode.name + " 吗？")){
+//			projectService.updteTreeName(treeNode.desc,treeNode.descId,newName).then(function(data){
+//				if(data.state){
+//					return true;
+//				}else{
+//					return false;
+//				}
+//			});
+			
+			$.ajax({
+				url:"/welleplus/project/updtetreename.do?desc="+treeNode.desc+"&descId="+treeNode.descId+"&name="+newName,
+				async:false,
+				success:function(data){
+					if(data.state){
+						alert(data.message);
+						flag = true;
+					}else{
+						alert(data.message);
+						flag = false;
+					}
+				},
+				error:function(){
+					return false;
+				}
+			});
+			
+		}else{
+			return;
+		}
+		
+//		return true;
+	}
+	
+	function onRemove(e, treeId, treeNode) {
+//		alert("删除成功");
+		$scope.treeNode1 = $rootScope.treeNode1;
+		projectService.getDownMenu($scope.treeNode1.desc,$scope.treeNode1.descId,$scope.treeuser.role,$scope.treeuser.id,$scope.treeuser.rid).then(function(data){
+			$rootScope.myMenu = data.data;
+			console.log(data);
+		})
+	}
+	function onRename(e, treeId, treeNode, isCancel) {
+//		alert("修改成功");
+		console.log(isCancel);
+		console.log(111);
+		$scope.treeNode1 = $rootScope.treeNode1;
+		console.log($scope.treeNode1);
+		if(!!$scope.treeNode1){
+			projectService.getDownMenu($scope.treeNode1.desc,$scope.treeNode1.descId,$scope.treeuser.role,$scope.treeuser.id,$scope.treeuser.rid).then(function(data){
+				$rootScope.myMenu = data.data;
+				console.log(data);
+			})
+		}else{
+			return;
+		}
+		
+	}
+	
+	
+	
+	
+	function  showRenameBtn(treeId, treeNode){
+		//获取节点所配置的noEditBtn属性值
+		if(treeNode.noEditBtn != undefined && treeNode.noEditBtn){
+			return false;
+		}else
+		{
+			return true;
+		}
+	}
+
+	
+	//添加节点
+	var newCount = 1;
+	$scope.addNode = function(){
+		$scope.treeNode1 = $rootScope.treeNode1;
+		if(!$scope.treeNode1){
+			alert("请选择组织！！");
+			return;
+		}
+		$scope.tree.fid = $scope.treeNode1.descId;
+		$scope.tree.cid = $scope.treeNode1.descId;
+		$scope.tree.sid = $scope.treeNode1.descId;
+		if($scope.tree.name==null||$scope.tree.name==""){
+			alert("请输入名称");
+			return;
+		}
+		if($scope.treeNode1.desc=="1"){
+			
+			companyServer.addCompanyInfo($scope.tree).then(function(data){
+				if(data.state){
+					$("#myclose").click();
+					var zTree = $.fn.zTree.getZTreeObj("tree");
+					zTree.addNodes($scope.treeNode1, {id:(100 + newCount), pId:treeNode1.id, name:$scope.tree.name,desc:$scope.treeNode1.desc+1,descId:data.id,icon:'css/zTreeStyle/img/diy/3.png'});
+					newCount++;
+					
+					projectService.getDownMenu($scope.treeNode1.desc,$scope.treeNode1.descId,$scope.treeuser.role,$scope.treeuser.id,$scope.treeuser.rid).then(function(data){
+						$rootScope.myMenu = data.data;
+						console.log(data);
+					})
+				}else{
+					alert(data.message);
+				}
+			});
+		}else if($scope.treeNode1.desc=="2"){
+			sectionServer.addSectionInfo($scope.tree).then(function(data){
+				if(data.state){
+					$("#myclose").click();
+					var zTree = $.fn.zTree.getZTreeObj("tree");
+					zTree.addNodes($scope.treeNode1, {id:(1000 + newCount), pId:treeNode1.id, name:$scope.tree.name,desc:$scope.treeNode1.desc+1,descId:data.id,icon:'css/zTreeStyle/img/diy/5.png'});
+					newCount++;
+					
+					projectService.getDownMenu($scope.treeNode1.desc,$scope.treeNode1.descId,$scope.treeuser.role,$scope.treeuser.id,$scope.treeuser.rid).then(function(data){
+						$rootScope.myMenu = data.data;
+						console.log(data);
+					})
+				}else{
+					alert(data.message);
+				}
+				
+			});
+		}else if($scope.treeNode1.desc=="3"){
+			projectService.addProjectInfo($scope.tree).then(function(data){
+				if(data.state){
+					$("#myclose").click();
+					var zTree = $.fn.zTree.getZTreeObj("tree");
+					zTree.addNodes($scope.treeNode1, {id:(1000 + newCount), pId:treeNode1.id, name:$scope.tree.name,desc:$scope.treeNode1.desc+1,descId:data.id,icon:'css/zTreeStyle/img/diy/7.png'});
+					newCount++;
+					
+					projectService.getDownMenu($scope.treeNode1.desc,$scope.treeNode1.descId,$scope.treeuser.role,$scope.treeuser.id,$scope.treeuser.rid).then(function(data){
+						$rootScope.myMenu = data.data;
+						console.log(data);
+					})
+				}else{
+					alert(data.message);
+				}
+			});
+		}else{
+			$("#myclose").click();
+			alert("无法添加");
+		}
+		
+		
+	}
+	
+	$scope.showcontentinfo = function(){
+		if($scope.isshowcontentinfo){
+			$scope.isshowcontentinfo = false;
+		}else{
+			$scope.isshowcontentinfo = true;
+		}
+		
+	}
+	
+	$scope.openuserinfoview = function(){
+		console.log($scope.selected);
+		if(!$scope.role){
+			alert("请选择组织");
+			return;
+		}
+		if($scope.role < $scope.treeuser.role){
+			alert("您没有权限向该组织添加用户");
+			return;
+		}
+		if($scope.role!=1&&$scope.role!=4){
+			$rootScope.showcontext = true;
+		}else{
+			$rootScope.showcontext = false;
+		}
+		$scope.user.role = $scope.role;
+		$("#adduser").click();
+		
+	}
+	
+	//添加用户
+	$scope.addUser = function(){
+//		if(!$scope.user.userName){
+//			alert("用户名不可以为空");
+//			return;
+//		}
+//		if(!$scope.user.password){
+//			alert("密码不可以为空");
+//			return;
+//		}
+		if($scope.user.name.length>10){
+			alert("姓名超过10个字符");
+			return;
+		}
+		if(!$scope.user.phonenumber){
+			alert("电话号码不可以为空");
+			return;
+		}
+		if($scope.user.phonenumber.length!=11){
+			alert("电话号码长度有误");
+			return;
+		}
+		if(!$scope.user.name){
+			alert("姓名不可以为空");
+			return;
+		}
+//		if(!$scope.user.email){
+//			alert("邮箱不可以为空");
+//			return;
+//		}
+		if($scope.user.equipnumber&&$scope.user.equiptype!=0&&!$scope.user.equiptype){
+			alert("请输入设备类型");
+			return;
+		}
+		if(!$scope.user.equipnumber&&($scope.user.equiptype||$scope.user.equiptype==0)){
+			alert("请输入设备编号");
+			return;
+		}
+		if($scope.user.promise==1&&(!$scope.user.userName||!$scope.user.password)){
+			alert("管理员请输入用户名和密码!");
+			return;
+		}
+		$scope.user.getdate = $("#lastname").val();
+		$scope.user.ids = $scope.selected;
+		$scope.user.rid = $rootScope.rid;
+		console.log($scope.user);
+		userServer.addUserInfo($scope.user).then(function(data){
+			if(data.state){
+				alert(data.message);
+				$("#userclose").click();
+				$scope.user.userName=null;
+				$scope.user.password=null;
+				$scope.user.phonenumber=null;
+				$scope.user.name=null;
+				$scope.user.email=null;
+				$scope.user.equipnumber = null;
+				$scope.user.equiptype = null;
+				if($scope.role >= $scope.treeuser.role){
+					//获取人员信息
+					userServer.getUserInfo($rootScope.userquery).then(function(data){
+						console.log(data);
+						$rootScope.userinfos = data.data;
+					});
+				}else{
+					$scope.userinfos = null;
+				}
+			}else{
+				alert(data.message);
+			}
+		});
+	}
+	
+	
+	laydate.render({
+        elem: '#lastname' //指定元素
+        , type: 'datetime'
+        , format: 'yyyy-MM-dd HH:mm:ss' //可任意组合
+//        ,min: '2000-01-01 00:00:00'
+//        ,max: 'new Date()'
+        , theme: '#393D49'
+    });
+	
+	
+	laydate.render({
+        elem: '#editlastname' //指定元素
+        , type: 'datetime'
+        , format: 'yyyy-MM-dd HH:mm:ss' //可任意组合
+//        ,min: '2000-01-01 00:00:00'
+//        ,max: 'new Date()'
+        , theme: '#393D49'
+    });
+	
+	$rootScope.editUser = function(){
+		console.log($rootScope.edituser);
+		if(!$rootScope.edituser.name.length>10){
+			alert("姓名超过10个字符");
+			return;
+		}
+		if(!$rootScope.edituser.phonenumber){
+			alert("电话号码不可以为空");
+			return;
+		}
+		if($rootScope.edituser.phonenumber.length!=11){
+			alert("电话号码长度有误");
+			return;
+		}
+		if(!$rootScope.edituser.name){
+			alert("姓名不可以为空");
+			return;
+		}
+//		if(!$scope.user.email){
+//			alert("邮箱不可以为空");
+//			return;
+//		}
+		if($rootScope.edituser.equipnumber&&$rootScope.edituser.equiptype!=0&&!$rootScope.edituser.equiptype){
+			alert("请输入设备类型");
+			return;
+		}
+		if(!$rootScope.edituser.equipnumber&&($rootScope.edituser.equiptype||$rootScope.edituser.equiptype==0)){
+			alert("请输入设备编号");
+			return;
+		}
+		if($rootScope.edituser.promise==1&&(!$rootScope.edituser.userName||!$rootScope.edituser.password)){
+			alert("管理员请输入用户名和密码!");
+			return;
+		}
+		$rootScope.edituser.ids = $rootScope.editSelected;
+		$rootScope.edituser.getdate = $("#editlastname").val();
+		console.log($rootScope.edituser);
+		userServer.editUserInfo($rootScope.edituser).then(function(data){
+			console.log(data);
+			if(data.state){
+				alert(data.message);
+				userServer.getUserInfo($rootScope.useruser).then(function(data){
+					$rootScope.userinfos = data.data;
+					console.log($rootScope.userinfos);
+				});
+				$rootScope.edituser = {};
+				$("#edituserclose").click();
+			}else{
+				alert(data.message);
+			}
+		});
+	}
+	
+//	$scope.selected = [] ;
+//    $scope.isChecked = function(id){
+////        return $scope.defids.indexOf(id) >= 0 ;  
+//        return true;
+//    } ;  
+//    $scope.updateSelection = function($event,id){
+//        var checkbox = $event.target ;  
+//        var checked = checkbox.checked ;  
+//        if(checked){  
+//            $scope.selected.push(id) ;  
+//        }else{  
+//            var idx = $scope.selected.indexOf(id) ;  
+//            $scope.selected.splice(idx,1) ;  
+//        }  
+//    } ; 
+    
+	$rootScope.editSelected = [];
+    $rootScope.isEditChecked = function(id){
+    	if($rootScope.editids){
+    		return $rootScope.editids.indexOf(id) >= 0;
+    	}else{
+    		return false;
+    	}
+    	
+    }
+    
+    $scope.updateEditSelection = function($event,id){
+		  var checkbox = $event.target ;  
+		  var checked = checkbox.checked ;  
+		  if(checked){  
+		      $rootScope.editSelected.push(id) ;  
+		  }else{  
+		      var idx = $rootScope.editSelected.indexOf(id) ;  
+		      $rootScope.editSelected.splice(idx,1) ;  
+		  }  
+    } ; 
+    
+    
+    $scope.clickDown = function(){
+    	$("#excelInput").click();
+    }
+    
+  //上传excel
+    $scope.uploadExcel = function(){
+//    	var name=docObj.value; 
+    	var name = $scope.excelInput;
+    	console.log(name);
+        var type=name.split(".");  
+        type=type[type.length-1];  
+        if("xlsx"!=type &&"xls"!=type){  
+            alert("错误的类型，请选择Excel文件");  
+//            document.getElementById("excelInput").value=null;//防止将非图片类型上传  
+            $scope.excelInput = null;
+            return ;  
+        }
+        
+        
+        
+        if($scope.excelDesc && $scope.excelDescId){
+        	var formData = new FormData();
+            formData.append("myfile", document.getElementById("excelInput").files[0]);
+//            formData.append("id",id);
+            $.ajax({
+                url: "/welleplus/file/uploadexcel.do?desc="+$scope.excelDesc+"&descId="+$scope.excelDescId,
+                type: "POST",
+                data: formData,
+                /**
+                *必须false才会自动加上正确的Content-Type
+                */
+                contentType: false,
+                /**
+                * 必须false才会避开jQuery对 formdata 的默认处理
+                * XMLHttpRequest会对 formdata 进行正确的处理
+                */
+                processData: false,
+                success: function (data) {
+                    if (data.state) {
+                    	alert(data.message);
+//                        $("#excelInput").val("");
+                        $scope.excelInput = null;
+                        
+                        userServer.getUserInfo($rootScope.userquery).then(function(data){
+            				console.log(data);
+            				$rootScope.userinfos = data.data;
+            				
+            				var optInit = getOptionsFromForm();
+            		        $("#Pagination").pagination($scope.usercount, optInit);
+            		        
+            				$("#setoptions").click(function(){
+            		            var opt = getOptionsFromForm();
+            		            $("#Pagination").pagination($scope.usercount, opt);
+            		        });
+            			});
+                    }else{
+                    	alert(data);
+//                    	$("#excelInput").val("");
+                    	$scope.excelInput = null;
+                    }
+                },
+                error: function () {
+                    alert("导入失败，请稍后再试");
+//                    $("#excelInput").val("");
+                    $scope.excelInput = null;
+                }
+            });
+        }else{
+        	alert("请选择上级组织");
+//        	$("#excelInput").val("");
+        	$scope.excelInput = null;
+        }
+        
+        
+    }
+    
+    
+  
+	
+});
+
+app.directive("userdelete",function($rootScope,$document,userServer){
+	return{
+		restrict:"E",
+		require:"ngModel",
+		link:function(scope,element,attrs,ngModel){
+			element.bind("click",function(){
+				if(confirm("您确定要删除吗？")){
+					var id = ngModel.$modelValue.id;
+					console.log(id);
+					scope.$apply(function(){
+						for(var i=0;i<scope.userinfos.length;i++){
+							if(scope.userinfos[i].id == id){
+								userServer.deleteUserInfo(id).then(function(data){
+									if(data.state){
+										alert("删除成功");
+										userServer.getUserInfo($rootScope.useruser).then(function(data){
+											$rootScope.userinfos = data.data;
+											console.log(1111);
+											console.log($rootScope.userinfos);
+										});
+									}else{
+										alert(data);
+									}
+								});
+							}
+						}
+					});
+					
+					
+				}
+//				var id = ngModel.$modelValue.userName;
+//				scope.$apply(function(){
+//					for(var i = 0;i<scope.users.length;i++){
+//						if(scope.users[i].userName==id){
+//							userService.deleteUserInfo(ngModel.$modelValue).then(function(data){
+//								window.wxc.xcConfirm(data.message, window.wxc.xcConfirm.typeEnum.info);
+//								$rootScope.count = $rootScope.count-1;
+//								if(data.states){
+//									userService.getUserInfos().then(function(data){
+//										$rootScope.users = data.data;
+//									});
+//								}
+//							});
+//							
+//						}
+//					}
+//				});
+			});
+		}
+	}
+});
+
+app.directive("useredit",function($rootScope,$document,userServer){
+	return{
+		restrict:"E",
+		require:"ngModel",
+		link:function(scope,element,attrs,ngModel){
+			element.bind("click",function(){
+					var id = ngModel.$modelValue.id;
+					scope.$apply(function(){
+						for(var i=0;i<scope.userinfos.length;i++){
+							if(scope.userinfos[i].id == id){
+//								$rootScope.mysrc = "images/loading.gif";
+//								$rootScope.mysrc = "images/adduser.jpg";
+								console.log(ngModel.$modelValue);
+								var result = ngModel.$modelValue;
+								$("#edituser").click();
+								if(result.role!=1&&result.role!=4){
+									$rootScope.showcontext = true;
+								}else{
+									$rootScope.showcontext = false;
+								}
+								console.log(result.id);
+//								$("#myimg").removeAttr("src");
+								if(result.imgsrc){
+									$("#myimg").attr("src",$rootScope.imgpath+result.id);
+//									$rootScope.mysrc = $rootScope.imgpath+result.id;
+								}else{
+//									$("#myimg").attr("src","images/adduser.jpg");
+//									$rootScope.mysrc = "images/adduser.jpg";
+									$("#myimg").attr("src","images/adduser.jpg");
+								}
+								$rootScope.edituser.userName = result.userName;
+								$rootScope.edituser.phonenumber = result.phonenumber;
+								$rootScope.edituser.name = result.name;
+								$rootScope.edituser.email = result.email;
+								if(result.sex == "男"){
+									$rootScope.edituser.sex = 1;
+								}else{
+									$rootScope.edituser.sex = 0;
+								}
+								$rootScope.edituser.worktype = result.worktype;
+								$rootScope.edituser.equiptype = result.equiptype;
+								$rootScope.edituser.equipnumber = result.equipnumber;
+								$rootScope.edituser.equipstate = result.equipstate;
+								
+								$rootScope.edituser.edituserName = $rootScope.edituser.userName;
+								$rootScope.edituser.editphonenumber = $rootScope.edituser.phonenumber;
+								$rootScope.edituser.editequipnumber = $rootScope.edituser.equipnumber;
+								
+								$rootScope.edituser.id = result.id;
+								$rootScope.edituser.role = result.role;
+								$rootScope.edituser.promise = result.promise;
+								$rootScope.edituser.password = result.password;
+								
+								
+								
+								
+								if('1'!=result.role&&"4"!=result.role){
+									$rootScope.showeditcontext = true;
+								}else{
+									$rootScope.showeditcontext = false;
+								}
+								
+								if(result.getdate!=null){
+									$("#editlastname").val(result.getdate+" 00:00:00");
+								}else{
+									$("#editlastname").val("");
+								}
+								
+								
+								$rootScope.editids = [];
+								var correlations = result.correlations;
+								for(var j=0;j<correlations.length;j++){
+									$rootScope.editids.push(correlations[j].gradeid);
+								}
+								console.log($rootScope.editids);
+								$rootScope.editSelected = $rootScope.editids;
+								
+							}
+						}
+					});
+//				var id = ngModel.$modelValue.userName;
+//				scope.$apply(function(){
+//					for(var i = 0;i<scope.users.length;i++){
+//						if(scope.users[i].userName==id){
+//							userService.deleteUserInfo(ngModel.$modelValue).then(function(data){
+//								window.wxc.xcConfirm(data.message, window.wxc.xcConfirm.typeEnum.info);
+//								$rootScope.count = $rootScope.count-1;
+//								if(data.states){
+//									userService.getUserInfos().then(function(data){
+//										$rootScope.users = data.data;
+//									});
+//								}
+//							});
+//							
+//						}
+//					}
+//				});
+			});
+		}
+	}
+});

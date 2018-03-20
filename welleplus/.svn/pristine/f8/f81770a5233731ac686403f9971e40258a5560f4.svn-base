@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.CorrelationDao">
+    
+    <insert id="addCorrelationInfo" parameterType="com.welleplus.entity.Correlation" useGeneratedKeys="true" keyProperty="id">
+        insert into t_correlation(uid,pmid,grade,gradeid) values(#{uid},#{pmid},#{grade},#{gradeid});
+    </insert>
+    
+    <select id="getCorrelationInfo" parameterType="com.welleplus.entity.Correlation" resultType="com.welleplus.entity.Correlation">
+        select * from t_correlation 
+        <where>
+            <if test="uid != null and uid!=''">
+                and uid = #{uid}
+            </if>
+            <if test="grade != null and grade != ''">
+                and grade = #{grade}
+            </if>
+        </where>
+    </select>
+    <!--通过用户id获取关联信息-->
+    <select id="getCorrelation" parameterType="com.welleplus.entity.Correlation" resultType="com.welleplus.entity.Correlation">
+        SELECT * FROM
+        t_correlation
+        WHERE uid=#{uid}
+    </select>
+    <!--通过用户id获取关联信息-->
+    <select id="getCorrelationByUid" parameterType="com.welleplus.entity.UserInfo" resultType="com.welleplus.entity.Correlation">
+        SELECT crr.id,crr.uid,crr.grade,crr.gradeid
+        FROM
+        t_correlation crr
+        RIGHT JOIN t_user u ON u.id=crr.uid
+        WHERE uid=#{id}
+        order by crr.id desc limit 0,1
+    </select>
+    
+    <delete id="deleteCorrelationInfo" parameterType = "com.welleplus.entity.Correlation">
+      	delete from t_correlation where grade = #{grade} and gradeid = #{gradeid}
+    </delete>
+    
+    <delete id="deleteCorrelationInfoFromUid" parameterType = "Long">
+       delete from t_correlation where uid = #{uid} 
+    </delete>
+
+</mapper>

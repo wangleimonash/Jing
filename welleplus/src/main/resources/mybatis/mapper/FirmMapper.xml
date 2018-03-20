@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.FirmDao">
+    <!-- 查询用户信息语句 -->
+    <select id="getFirmInfo" parameterType="long" resultType="com.welleplus.entity.FirmInfo">
+		select
+		*
+		from t_firm where id = #{id}
+	</select>
+	
+    <select id="getFirmInfos" resultType="com.welleplus.entity.FirmInfo">
+        select * from t_firm
+    </select>
+    
+    <update id="updateFirmName" parameterType="com.welleplus.entity.FirmInfo">
+        update t_firm set name = #{name} where id = #{id}
+    </update>
+    
+    <delete id="deleteFirmInfo" parameterType="Long">
+        delete from t_firm where id = #{id}
+    </delete>
+    <!--查询用户所在组织-->
+    <select id="getOrg" parameterType="com.welleplus.entity.UserInfo" resultType="map">
+      SELECT
+        fir.id AS id1,fir.`name` AS name1,fir.grade AS grade1,
+        com.fid AS fid,com.id AS id2,com.`name` AS name2,com.grade AS grade2,
+        sec.cid AS cid,sec.id AS id3,sec.`name` AS name3,sec.grade AS grade3,
+        pro.sid AS sid,pro.id AS id4,pro.`name` AS name4,pro.grade AS grade4
+        FROM t_firm fir
+        LEFT JOIN t_company com ON com.fid=fir.id
+        LEFT JOIN t_section sec ON sec.cid=com.id
+        LEFT JOIN t_project pro ON pro.sid=sec.id
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="role == 1">
+                and fir.id = #{rid}
+            </if>
+            <if test="role == 2">
+                and com.id = #{rid}
+            </if>
+            <if test="role == 3">
+                and sec.id = #{rid}
+            </if>
+            <if test="role == 4">
+                and pro.id = #{rid}
+            </if>
+        </trim>
+        order by pro.id desc limit 0,1
+    </select>
+</mapper>

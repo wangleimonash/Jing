@@ -1,0 +1,62 @@
+<div class="x_content" style="float: left;width: 21%;height:600px;">
+<!--<div style="float: left;width: 26%;height: 580px; background-color:#E0E0E0;">-->
+   
+    <dl style="margin-top: 20px;">
+        <dt>
+            <!--<div class="form-group">-->
+                <!--<div class="input-group date">-->
+                    <!--&lt;!&ndash;<input class="js-typeahead" name="q" type="search" placeholder="请输入姓名或电话" align="right" style="margin-right:-7%;margin-left:3%;width:208px;height: 30px;" ng-model="map.param">&ndash;&gt;-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="typeahead__container">
+                <div class="typeahead__field">
+            					<span class="typeahead__query">
+								<input class="js-typeahead" name="q" type="search" autocomplete="off"
+                                       style="border: 1px solid #ddd; height: 30px; width: 208px;margin-right:-7%;"
+                                       placeholder="姓名或设备编号或电话" id="param1"  ng-model="map.param">
+								</span></div></div>
+
+        </dt>
+    </dl>
+
+    <dl style="position: relative;left: 71%;top:-13px;padding: 2px 2px 2px 2px;">
+        <dt>
+            <button type="button" class="btn btn-primary" ng-click="searchlocation()">查询</button>
+            <!--<button style="border: solid 1px;border-radius: 5px;"-->
+                    <!--align="center" ng-click="searchlocation()">-->
+                <!--&lt;!&ndash;<i class="layui-icon" style="font-size: 25px; color: #050206;">&#xe615;</i>&ndash;&gt;-->
+                <!--<div class="fa-hove col-md-3 col-sm-4 col-xs-12">-->
+                    <!--<a>-->
+                        <!--<i class="fa fa-search" style="font-size: 25px;color: #050206;"></i>-->
+                    <!--</a>-->
+                <!--</div>-->
+            <!--</button>-->
+        </dt>
+    </dl>
+    <div style="color:gray;margin-left: 3%;margin-top: -3%">
+        <dl align="left">
+            <!--<dt style="padding: 2px 2px 2px 2px;">-->
+                <!--姓名:&nbsp;<span style="color: rgba(110,112,117,0.77)">{{locations[0].userName}}</span>-->
+            <!--</dt>-->
+            <dt style="padding: 2px 2px 2px 2px;">
+                姓名:&nbsp;<span style="color: rgba(110,112,117,0.77)">{{locations.locationmap[0].Name}}{{locations.locationmap[0].name}}</span>
+            </dt>
+            <dt style="padding: 2px 2px 2px 2px;">电话:&nbsp;<span style="color: #606266">{{locations.locationmap[0].phonenumber}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">总公司:&nbsp;<span style="color: #606266">{{locations.map.name1}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;" ng-show="isshowname2">分公司:&nbsp;<span style="color: #606266">{{locations.map.name2}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;" ng-show="isshowname3">部&nbsp;&nbsp;&nbsp;门:&nbsp;<span style="color: #606266">{{locations.map.name3}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;" ng-show="isshowname4">工作组:&nbsp;<span style="color: #606266">{{locations.map.name4}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">设备类型:&nbsp;<span style="color: #606266">{{locations.locationmap[0].equiptype}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">设备编号:&nbsp;<span style="color: #606266">{{locations.locationmap[0].equipnumber}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">设备电量:&nbsp;<span style="color: #606266">{{locations.locationmap[0].bat}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;" ng-show="isaltitudeshow">设备海拔:&nbsp;<span style="color: #606266">{{locations.locationmap[0].Altitude}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;" ng-show="isheartshow">用户心率:&nbsp;<span style="color: #606266">{{locations.locationmap[0].heart}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">定位方式:&nbsp;<span style="color: #606266">{{locations.locationmap[0].position}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">定位时间:&nbsp;<span style="color: #606266">{{locations.locationmap[0].datetime}}</span></dt>
+            <dt style="padding: 2px 2px 2px 2px;">定位地址:&nbsp;<span style="color: #606266">{{locations.locationmap[0].address}}</span></dt>
+        </dl>
+
+    </div>
+</div>
+<div id="container" style="height: 580px;width: 79%;float: right;position: relative;left: 0px;"></div>
+

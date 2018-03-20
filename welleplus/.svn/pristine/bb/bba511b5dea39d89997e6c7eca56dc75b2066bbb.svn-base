@@ -1,0 +1,839 @@
+<div>
+    <div class="col-md-12 col-sm-6 col-xs-12" style="padding:0px">
+        <div class="x_panel" style="padding-right:0px">
+            <div class="">
+<!--                 <h2> 人员设备绑定 -->
+<!--                     <small>Float left</small> -->
+<!--                 </h2> -->
+<!--                 <ul class="nav navbar-right panel_toolbox"> -->
+<!--                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a> -->
+<!--                     </li> -->
+<!--                     <li class="dropdown"> -->
+<!--                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" -->
+<!--                            aria-expanded="false"><i class="fa fa-wrench"></i></a> -->
+<!--                         <ul class="dropdown-menu" role="menu"> -->
+<!--                             <li><a href="#">Settings 1</a> -->
+<!--                             </li> -->
+<!--                             <li><a href="#">Settings 2</a> -->
+<!--                             </li> -->
+<!--                         </ul> -->
+<!--                     </li> -->
+<!--                     <li><a class="close-link"><i class="fa fa-close"></i></a> -->
+<!--                     </li> -->
+<!--                 </ul> -->
+<!--                 <div class="clearfix"></div> -->
+            </div>
+            <div class="x_content" style="padding:0px;min-height:555px">
+
+                <div class="col-sm-3 zTreeDemoBackground" style="left:-10px">
+                    <ul id="tree" class="ztree" style="font-size:15px;padding-left:0px"></ul>
+                </div>
+                <div class="col-sm-9" style="width:75%;left:-30px;padding:0px">
+                    <div>
+                        <span><small style="font-size:16px">当前组织 : <span>{{message}}</span></small>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <small style="font-size:16px">当前人数 : <span>{{usercount}}</span></small>
+                        </span>
+<!--                         <input type="button" style="width:50px;height:30px;padding:0px;" -->
+<!--                                class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myModal" -->
+<!--                                value="添加"> -->
+<!--                         </input> -->
+                        <i style="padding-right:15px" title="添加" class="fa fa-plus-circle pull-right fa-2x" data-toggle="modal" data-target="#myModal"></i>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>人数</th>
+<!--                                 <th>操作</th> -->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="t in myMenu">
+                                <td>{{$index+1}}</td>
+<!--                                  <td style="display: none;" ng-model="handle.id">{{t.id}}</td> -->
+<!--                                  <td style="display: none;" ng-model="handle.pId">{{t.pId}}</td>  -->
+                                <td>{{t.name}}</td>
+                                <td>{{t.count}}</td>
+<!--                                 <td> -->
+<!--                                     <button type="button" class="btn btn-dark" ng-click="orgEdit()">编辑</button> -->
+<!--                                     &nbsp;&nbsp; -->
+<!--                                     <button type="button" class="btn btn-danger" ng-click="orgDel()">删除</button> -->
+<!--                                 </td> -->
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="clearfix" style="background-color:#ededed;height:2px"></div>
+                    <div class="clearfix" style="height:8px"></div>
+                    <div class="" style="padding-top:5px">
+                        <span><small style="font-size:16px">当前组织 : <span>{{message}}</span></small>
+                        </span>
+<!--                         <input type="button" style="width:50px;height:30px;padding:0px;" -->
+<!--                                class="btn btn-primary btn-lg pull-right" -->
+<!--                                value="添加" ng-click="openuserinfoview()"> -->
+<!--                         </input> -->
+                        <i style="padding-right:15px" title="添加" class="fa fa-plus-circle pull-right fa-2x" ng-click="openuserinfoview()"></i>
+                        <input ng-show="false" type="button" style="width:50px;height:30px;padding:0px;"
+                               class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myModalUser"
+                               value="添加" id="adduser">
+                        </input>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>姓名</th>
+<!--                                 <th>用户名</th> -->
+                                <th>电话号码</th>
+                                <th>性别</th>
+<!--                                 <th>邮箱</th> -->
+                                
+<!--                                 <th>创建时间</th> -->
+								<th>工种</th>
+								<th>设备类型</th>
+								<th>设备编号</th>
+								<th>是否启用</th>
+<!-- 								<th>领取时间</th> -->
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="t in userinfos" style="height:35px">
+                                <td>{{10*indexPage+$index+1}}</td>
+                                <td>{{t.name}}</td>
+                                <td style="display: none;">{{t.id}}</td>
+<!--                                 <td>{{t.userName}}</td> -->
+                                <td>{{t.phonenumber}}</td>
+                                <td>{{t.sex}}</td>
+<!--                                 <td>{{t.email}}</td> -->
+                                
+<!--                                 <td>{{t.creatdate}}</td> -->
+								<td>{{t.worktypeStr}}</td>
+								<td>{{t.equipTypeStr}}</td>
+								<td>{{t.equipnumber}}</td>
+								<td>{{t.equipStateStr}}</td>
+<!-- 								<td>{{t.getdate}}</td> -->
+                                <td style="padding:0px;padding-top:2px">
+                                    <useredit class="fa fa-exclamation-circle fa-2x" title="编辑" ng-model="t">
+<!-- 							        	<span class="glyphicon glyphicon-trash">编辑</span> -->
+							        </useredit>
+							        &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <userdelete class="fa fa-times-circle fa-2x" title="删除" ng-model="t">
+							        </userdelete>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-tools pull-right">
+						<div id="Pagination"></div>
+		            </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel3">
+                                组织信息：&nbsp;&nbsp;<span style="font-size:14px">{{message}}</span>
+                            </h4>
+                        </div>
+                        <div class="modal-body" style="height:150px">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="name">名称</label>
+                                    <input style="width:99%" type="text" class="form-control" id="name" placeholder="请输入名称"
+                                           ng-model="tree.name">
+                                </div>
+                            </form>
+                            <div class="pull-right" style="padding-top:9px">
+                            	<button type="button" class="btn btn-default" data-dismiss="modal" id="myclose">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-click="addNode()">
+                                提交
+                            </button>
+                            </div>
+                            
+                        </div>
+<!--                         <div class="modal-footer"> -->
+                            
+<!--                         </div> -->
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            
+            
+            <!--------------------------------------------添加人员-------------------------------------------------------------- -->
+            <div class="modal fade" id="myModalUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" style="width:700px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                	添加人员&nbsp;&nbsp;<small>当前组织 : <span style="font-size:14px">{{message}}</span></small>
+                            </h4>
+                        </div>
+                        <div class="modal-body" style="padding:0px">
+                            <div class="x_content">
+                                <br/>
+                                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                	<div class="form-group">
+                                		<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">姓名
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text"  required="required"
+                                                   class="form-control col-md-7 col-xs-12" ng-model="user.name">
+                                        </div>
+                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 最多10个字符  )
+                                        </label>
+                                	</div>
+                                	<div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">电话号码
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text"  name="last-name" required="required"
+                                                   class="form-control col-md-7 col-xs-12" ng-model="user.phonenumber">
+                                        </div>
+                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 电话号码不可以重复  )
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">工种<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                        	<select class="form-control" ng-model="user.worktype">
+<!-- 						                        <option value="0" ng-selected="user.worktype == 0">管理员</option> -->
+												<option value="0" ng-selected="user.worktype == 0">其他</option>
+						                        <option value="1" ng-selected="user.worktype == 1">农民工</option>
+						                        <option value="2" ng-selected="user.worktype == 2">安全人员</option>
+						                        <option value="3" ng-selected="user.worktype == 3">管理人员</option>
+						                     </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">性别<span
+                                                class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div id="gender" class="btn-group">
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-primary">
+                                                    <input type="radio" name="user.sex" value="1" ng-model="user.sex"
+                                                           ng-checked="true"> &nbsp; 男 &nbsp;
+                                                </label>
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-default">
+                                                    <input type="radio" name="user.sex" value="0" ng-model="user.sex">
+                                                    &nbsp; 女&nbsp;
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备类型<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                        	<select class="form-control" ng-model="user.equiptype">
+						                        <option value="0" ng-selected="user.equiptype == 0">手表</option>
+						                        <option value="1" ng-selected="user.equiptype == 1">安全帽</option>
+						                        <option value="2" ng-selected="user.equiptype == 2">app</option>
+						                        <option value="3" ng-selected="user.equiptype == 3">rfid</option>
+						                     </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备编号<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text" name="last-name"
+                                                   class="form-control col-md-7 col-xs-12" ng-model="user.equipnumber">
+                                        </div>
+                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 设备编号不可以重复  )
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">是否启用<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div id="gender" class="btn-group">
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-primary">
+                                                    <input type="radio" name="user.equipstate" value="1" ng-model="user.equipstate"
+                                                           ng-checked="user.equipstate == 1"> &nbsp; 是 &nbsp;
+                                                </label>
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-default">
+                                                    <input ng-checked = "user.equipstate == 0" type="radio" name="user.equipstate" value="0" ng-model="user.equipstate">
+                                                    &nbsp; 否&nbsp;
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                    	<span ng-click="showcontentinfo()" style="color:blue" title="详细内容" class="pull-right">详细内容</span>
+                                    </div>
+                                    
+                                    <div ng-show="isshowcontentinfo">
+                                    	<div class="form-group">
+	                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">邮箱<span
+	                                                class="required"></span>
+	                                        </label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                            <input type="text" name="last-name" required="required"
+	                                                   class="form-control col-md-7 col-xs-12" ng-model="user.email">
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">权限<span
+	                                                class="required"></span></label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                        	<select class="form-control" ng-model="user.promise">
+							                        <option value="0" ng-selected="user.promise == 0">普通员工</option>
+							                        <option value="0" ng-selected="user.promise == 0">普通员工</option>
+							                        <option value="0" ng-selected="user.promise == 0">普通员工</option>
+							                        <option value="1" ng-selected="user.promise == 1">管理员</option>
+<!-- 							                        <option value="2" ng-selected="user.promise == 2">超级管理员</option> -->
+							                     </select>
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">登录账户名
+	                                            <span class="required"></span>
+	                                        </label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                            <input type="text"  required="required"
+	                                                   class="form-control col-md-7 col-xs-12" ng-model="user.userName">
+	                                        </div>
+	                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 用户名不可以重复  )
+                                        	</label>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">登录密码
+	                                            <span class="required"></span>
+	                                        </label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                            <input type="password"  name="last-name" required="required"
+	                                                   class="form-control col-md-7 col-xs-12" ng-model="user.password">
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group" ng-show="showcontext">
+	                                        <label class="col-md-3 col-sm-3 col-xs-12 control-label">管理内容
+	                                            <br>
+	                                        </label>
+	                                        <div class="col-md-9 col-sm-9 col-xs-12">
+	                                            <div class="checkbox" ng-repeat="x in myMenu">
+	                                                <label>
+	                                                    <input type="checkbox" class="flat"
+	                                                           ng-checked="isChecked(x.id)"
+	                                                           ng-click="updateSelection($event,x.id)"> {{x.name}}
+	                                                </label>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                	
+                                	
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">用户名 -->
+<!--                                             <span class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.userName"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">密码 -->
+<!--                                             <span class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.password"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">电话号码 -->
+<!--                                             <span class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.phonenumber"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">姓名<span -->
+<!--                                                 class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.name"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">邮箱<span -->
+<!--                                                 class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text" name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.email"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">性别<span -->
+<!--                                                 class="required">*</span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <div id="gender" class="btn-group"> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-primary"> -->
+<!--                                                     <input type="radio" name="user.sex" value="1" ng-model="user.sex" -->
+<!--                                                            ng-checked="true"> &nbsp; 男 &nbsp; -->
+<!--                                                 </label> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-default"> -->
+<!--                                                     <input type="radio" name="user.sex" value="0" ng-model="user.sex"> -->
+<!--                                                     &nbsp; 女&nbsp; -->
+<!--                                                 </label> -->
+<!--                                             </div> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">工种<span -->
+<!--                                                 class="required">*</span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                         	<select class="form-control" ng-model="user.worktype"> -->
+<!-- 						                        <option value="0" ng-selected="user.worktype == 0">管理员</option> -->
+<!-- 						                        <option value="1" ng-selected="user.worktype == 1">1</option> -->
+<!-- 						                        <option value="2" ng-selected="user.worktype == 2">2</option> -->
+<!-- 						                        <option value="3" ng-selected="user.worktype == 3">3</option> -->
+<!-- 						                     </select> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备类型<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                         	<select class="form-control" ng-model="user.equiptype"> -->
+<!-- 						                        <option value="0" ng-selected="user.equiptype == 0">手表</option> -->
+<!-- 						                        <option value="1" ng-selected="user.equiptype == 1">安全帽</option> -->
+<!-- 						                        <option value="2" ng-selected="user.equiptype == 2">app</option> -->
+<!-- 						                        <option value="3" ng-selected="user.equiptype == 3">rfid</option> -->
+<!-- 						                     </select> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备编号<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text" name="last-name" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.equipnumber"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">是否启用<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <div id="gender" class="btn-group"> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-primary"> -->
+<!--                                                     <input type="radio" name="user.equipstate" value="1" ng-model="user.equipstate" -->
+<!--                                                            ng-checked="true"> &nbsp; 是 &nbsp; -->
+<!--                                                 </label> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-default"> -->
+<!--                                                     <input type="radio" name="user.equipstate" value="0" ng-model="user.equipstate"> -->
+<!--                                                     &nbsp; 否&nbsp; -->
+<!--                                                 </label> -->
+<!--                                             </div> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">领取日期<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text" id="lastname" name="last-name" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="user.getdate"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+
+<!--                                     <div class="form-group" ng-show="showcontext"> -->
+<!--                                         <label class="col-md-3 col-sm-3 col-xs-12 control-label">管理内容 -->
+<!--                                             <br> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-9 col-sm-9 col-xs-12"> -->
+<!--                                             <div class="checkbox" ng-repeat="x in myMenu"> -->
+<!--                                                 <label> -->
+<!--                                                     <input type="checkbox" class="flat" -->
+<!--                                                            ng-checked="isChecked(x.id)" -->
+<!--                                                            ng-click="updateSelection($event,x.id)"> {{x.name}} -->
+<!--                                                 </label> -->
+<!--                                             </div> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    <div class="ln_solid"></div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="userclose">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-click="addUser()">
+                                提交
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+            
+<!-----------------------------------------------------编辑信息------------------------------------------------------------>
+            
+            <input ng-show="false" type="button" style="width:50px;height:30px;padding:0px;"
+                   class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myEditModalUser"
+                   value="添加" id="edituser">
+            </input>
+            <div class="modal fade" id="myEditModalUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" style="width:700px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                	编辑人员&nbsp;&nbsp;<small>当前组织 : <span>{{message}}</span></small>
+                            </h4>
+                        </div>
+                        <div class="modal-body" style="padding:0px">
+                            <div class="x_content">
+                                <br/>
+                                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                                	<div class="form-group">
+                                		<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">姓名
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text"  required="required"
+                                                   class="form-control col-md-7 col-xs-12" ng-model="edituser.name">
+                                        </div>
+                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 最多10个字符  )
+                                        </label>
+                                	</div>
+                                	<div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">电话号码
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text"  name="last-name" required="required"
+                                                   class="form-control col-md-7 col-xs-12" ng-model="edituser.phonenumber">
+                                        </div>
+                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 电话号码不可以重复  )
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">工种<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                        	<select class="form-control" ng-model="edituser.worktype">
+<!-- 						                        <option value="0" ng-selected="user.worktype == 0">管理员</option> -->
+												<option value="0" ng-selected="edituser.worktype == 0">其他</option>
+						                        <option value="1" ng-selected="edituser.worktype == 1">农民工</option>
+						                        <option value="2" ng-selected="edituser.worktype == 2">安全人员</option>
+						                        <option value="3" ng-selected="edituser.worktype == 3">管理人员</option>
+						                     </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">性别<span
+                                                class="required">*</span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div id="gender" class="btn-group">
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-primary">
+                                                    <input type="radio" name="user.sex" value="1" ng-model="edituser.sex"
+                                                           ng-checked="true"> &nbsp; 男 &nbsp;
+                                                </label>
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-default">
+                                                    <input type="radio" name="user.sex" value="0" ng-model="edituser.sex">
+                                                    &nbsp; 女&nbsp;
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备类型<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                        	<select class="form-control" ng-model="edituser.equiptype">
+                                        		<option value="" ng-selected="edituser.equiptype == ''"></option>
+						                        <option value="0" ng-selected="edituser.equiptype == 0">手表</option>
+						                        <option value="1" ng-selected="edituser.equiptype == 1">安全帽</option>
+						                        <option value="2" ng-selected="edituser.equiptype == 2">app</option>
+						                        <option value="3" ng-selected="edituser.equiptype == 3">rfid</option>
+						                     </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备编号<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text" name="last-name"
+                                                   class="form-control col-md-7 col-xs-12" ng-model="edituser.equipnumber">
+                                        </div>
+                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 设备编号不可以重复  )
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">是否启用<span
+                                                class="required"></span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <div id="gender" class="btn-group">
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-primary">
+                                                    <input type="radio" name="user.equipstate" value="1" ng-model="edituser.equipstate"
+                                                           ng-checked="edituser.equipstate == 1"> &nbsp; 是 &nbsp;
+                                                </label>
+                                                <label class="btn btn-default" data-toggle-class="btn-primary"
+                                                       data-toggle-passive-class="btn-default">
+                                                    <input ng-checked = "edituser.equipstate == 0" type="radio" name="user.equipstate" value="0" ng-model="edituser.equipstate">
+                                                    &nbsp; 否&nbsp;
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                    	<span ng-click="showcontentinfo()" style="color:blue" title="详细内容" class="pull-right">详细内容</span>
+                                    </div>
+                                    
+                                    <div ng-show="isshowcontentinfo">
+                                    	<div class="form-group">
+	                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">邮箱<span
+	                                                class="required"></span>
+	                                        </label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                            <input type="text" name="last-name" required="required"
+	                                                   class="form-control col-md-7 col-xs-12" ng-model="edituser.email">
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                    	<label class="control-label col-md-3 col-sm-3 col-xs-12">权限<span
+	                                                class="required"></span></label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                        	<select class="form-control" ng-model="edituser.promise">
+							                        <option value="0" ng-selected="edituser.promise == 0">普通员工</option>
+							                        <option value="1" ng-selected="edituser.promise == 1">管理员</option>
+<!-- 							                        <option value="2" ng-selected="user.promise == 2">超级管理员</option> -->
+							                     </select>
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">登录账户名
+	                                            <span class="required"></span>
+	                                        </label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                            <input type="text"  required="required"
+	                                                   class="form-control col-md-7 col-xs-12" ng-model="edituser.userName">
+	                                        </div>
+	                                        <label style="left:-23px;font-weight:0;color:red" class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">( * 用户名不可以重复  )
+                                        	</label>
+	                                    </div>
+	                                    <div class="form-group">
+	                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">登录密码
+	                                            <span class="required"></span>
+	                                        </label>
+	                                        <div class="col-md-6 col-sm-6 col-xs-12">
+	                                            <input type="password"  name="last-name" required="required"
+	                                                   class="form-control col-md-7 col-xs-12" ng-model="edituser.password">
+	                                        </div>
+	                                    </div>
+	                                    <div class="form-group" ng-show="showcontext">
+	                                        <label class="col-md-3 col-sm-3 col-xs-12 control-label">管理内容
+	                                            <br>
+	                                        </label>
+	                                        <div class="col-md-9 col-sm-9 col-xs-12">
+	                                            <div class="checkbox" ng-repeat="x in myMenu">
+	                                                <label>
+	                                                    <input type="checkbox" class="flat"
+	                                                           ng-checked="isChecked(x.id)"
+	                                                           ng-click="updateSelection($event,x.id)"> {{x.name}}
+	                                                </label>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                
+                                
+                                
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">用户名 -->
+<!--                                             <span class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="edituser.userName"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">电话号码 -->
+<!--                                             <span class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="edituser.phonenumber"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">姓名<span -->
+<!--                                                 class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text"  name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="edituser.name"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">邮箱<span -->
+<!--                                                 class="required">*</span> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text" name="last-name" required="required" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="edituser.email"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">性别<span -->
+<!--                                                 class="required">*</span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <div id="gender" class="btn-group"> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-primary"> -->
+<!--                                                     <input type="radio" name="edituser.sex" value="1" ng-model="edituser.sex" -->
+<!--                                                            ng-checked="edituser.sex == 1"> &nbsp; 男 &nbsp; -->
+<!--                                                 </label> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-default"> -->
+<!--                                                     <input type="radio" name="edituser.sex" value="0" ng-model="edituser.sex" -->
+<!--                                                     ng-checked="edituser.sex == 0"> -->
+<!--                                                     &nbsp; 女&nbsp; -->
+<!--                                                 </label> -->
+<!--                                             </div> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">工种<span -->
+<!--                                                 class="required">*</span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                         	<select class="form-control" ng-model="edituser.worktype"> -->
+<!-- 						                        <option value="0" ng-selected="edituser.worktype == 0">管理员</option> -->
+<!-- 						                        <option value="1" ng-selected="edituser.worktype == 1">1</option> -->
+<!-- 						                        <option value="2" ng-selected="edituser.worktype == 2">2</option> -->
+<!-- 						                        <option value="3" ng-selected="edituser.worktype == 3">3</option> -->
+<!-- 						                     </select> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备类型<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                         	<select class="form-control" ng-model="edituser.equiptype"> -->
+<!-- 						                        <option value="0" ng-selected="edituser.equiptype == 0">手表</option> -->
+<!-- 						                        <option value="1" ng-selected="edituser.equiptype == 1">安全帽</option> -->
+<!-- 						                        <option value="2" ng-selected="edituser.equiptype == 2">app</option> -->
+<!-- 						                        <option value="3" ng-selected="edituser.equiptype == 3">rfid</option> -->
+<!-- 						                     </select> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">设备编号<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text" name="last-name" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="edituser.equipnumber"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">是否启用<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <div id="gender" class="btn-group"> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-primary"> -->
+<!--                                                     <input type="radio" name="user.equipstate" value="1" ng-model="edituser.equipstate" -->
+<!--                                                            ng-checked="edituser.equipstate == 1"> &nbsp; 是 &nbsp; -->
+<!--                                                 </label> -->
+<!--                                                 <label class="btn btn-default" data-toggle-class="btn-primary" -->
+<!--                                                        data-toggle-passive-class="btn-default"> -->
+<!--                                                     <input type="radio" name="user.equipstate" value="0" ng-model="edituser.equipstate" -->
+<!--                                                     ng-checked="edituser.equipstate == 0"> -->
+<!--                                                     &nbsp; 否&nbsp; -->
+<!--                                                 </label> -->
+<!--                                             </div> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+<!--                                     <div class="form-group"> -->
+<!--                                     	<label class="control-label col-md-3 col-sm-3 col-xs-12">领取日期<span -->
+<!--                                                 class="required"></span></label> -->
+<!--                                         <div class="col-md-6 col-sm-6 col-xs-12"> -->
+<!--                                             <input type="text" id="editlastname" name="last-name" -->
+<!--                                                    class="form-control col-md-7 col-xs-12" ng-model="edituser.getdate"> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    
+
+<!--                                     <div class="form-group" ng-show="showeditcontext"> -->
+<!--                                         <label class="col-md-3 col-sm-3 col-xs-12 control-label">管理内容 -->
+<!--                                             <br> -->
+<!--                                         </label> -->
+<!--                                         <div class="col-md-9 col-sm-9 col-xs-12"> -->
+<!--                                             <div class="checkbox" ng-repeat="x in editMenu"> -->
+<!--                                                 <label> -->
+<!--                                                     <input type="checkbox" class="flat" -->
+<!--                                                            ng-checked="isEditChecked(x.id)" -->
+<!--                                                            ng-click="updateEditSelection($event,x.id)"> {{x.name}} -->
+<!--                                                 </label> -->
+<!--                                             </div> -->
+<!--                                         </div> -->
+<!--                                     </div> -->
+                                    <div class="ln_solid"></div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="edituserclose">关闭
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-click="editUser()">
+                                提交
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</div>

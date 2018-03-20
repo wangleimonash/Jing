@@ -1,0 +1,84 @@
+app.controller("workInfoCtrl",function($scope,$rootScope,projectService,fenceServer){
+	$scope.treeuser = {};
+	$scope.treeuser.userName = getCookie("welleplususername");
+	$scope.treeuser.role = getCookie("welleplusrole");
+	$scope.treeuser.rid = getCookie("welleplusrid");
+	$scope.treeuser.id = getCookie("welleplusuid");
+	
+	$scope.fence = {};
+	$scope.fence.role = $scope.treeuser.role;
+	$scope.fence.rid = $scope.treeuser.rid;
+	$scope.fence.uid = $scope.treeuser.id;
+	var setting = {
+			data: {
+				simpleData: {
+					enable: true
+				}
+			},
+			callback: {
+				onClick: onClick,
+			}
+		};
+    
+    projectService.getTreeInfo($scope.treeuser).then(function(data){
+		$scope.zNodes = data;
+		$.fn.zTree.init($("#tree"), setting, $scope.zNodes);
+		
+		$scope.fence.desc = $scope.zNodes[0].desc;
+		$scope.fence.descId = $scope.zNodes[0].descId;
+		fenceServer.getWorkInfos($scope.fence).then(function(data){
+    		if(data.state){
+    			$scope.userinfos = data.data;
+    		}else{
+    			$scope.userinfos = {};
+    		}
+    	})
+	});
+    
+    
+    
+    function onClick(event, treeId, treeNode, clickFlag) {
+    	var zTree = $.fn.zTree.getZTreeObj("tree");
+    	zTree.expandNode(treeNode);
+    	$scope.fence.desc = treeNode.desc;
+    	$scope.fence.descId = treeNode.descId;
+    	$scope.userinfos = {};
+    	
+    	fenceServer.getWorkInfos($scope.fence).then(function(data){
+    		console.log(data);
+    		if(data.state){
+    			$scope.userinfos = data.data;
+    		}else{
+    			$scope.userinfos = {};
+    		}
+    	})
+    	
+    }
+});
+
+app.directive("userworkop",function($rootScope,$document,userServer,waringServer,equipLocationServer){
+	return{
+		restrict:"E",
+		require:"ngModel",
+		link:function(scope,element,attrs,ngModel){
+			element.bind("click",function(){
+				console.log(ngModel.$modelValue);
+				var equipnumber = ngModel.$modelValue.equipnumber;
+				$rootScope.equipTypeStr = ngModel.$modelValue.equipTypeStr;
+				$rootScope.equipNumber = ngModel.$modelValue.equipnumber;
+				scope.$apply(function(){
+					$("#workdaysinfosbutton").click();
+					$rootScope.workpositions = {};
+					equipLocationServer.getWorkPosition(equipnumber).then(function(data){
+						console.log(data);
+						if(data.state){
+							$rootScope.workpositions = data.data;
+						}else{
+							$rootScope.workpositions = {};
+						}
+					});
+				});
+			});
+		}
+	}
+});

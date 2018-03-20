@@ -1,0 +1,86 @@
+<div class="x_content" style="padding-right:0px">
+	<div class="col-xs-2 zTreeDemoBackground">
+		<ul id="tree" class="ztree" style="font-size:15px;padding-left:0px"></ul>
+	</div>
+	
+	<div class="col-xs-10" id="mymain" style="padding-right:0px">
+		<table class="table table-striped table-bordered">
+             	<thead>
+                 	<tr>
+                     	<th>序号</th>
+                     	<th>姓名</th>
+                     	<th>设备编号</th>
+						<th>工种</th>
+						<th>电话</th>
+						<th>出勤天数</th>
+						<th>迟到</th>
+						<th>早退</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="t in userinfos">
+					<!--                                 <td>{{10*indexPage+$index+1}}</td> -->
+						<td>{{$index+1}}</td>
+						<td>{{t.name}}</td>
+						<td>{{t.equipnumber}}</td>
+						<td>{{t.worktypeStr}}</td>
+						<td>{{t.phonenumber}}</td>
+						<td>{{t.workdays}}</td>
+						<td>{{t.laterdays}}</td>
+						<td>{{t.befordays}}</td>
+						<td>
+							<userworkop ng-model="t"><a>查看</a></userworkop>
+						</td>
+                  	</tr>
+                 </tbody>
+         	</table>
+	</div>
+	
+	<button ng-show="false" id="workdaysinfosbutton" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">开始演示模态框</button>
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content" style="width:900px">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	                <h4 class="modal-title" id="myModalLabel">详细信息</h4>
+	            </div>
+	            <div class="modal-body">
+	            	<div>
+	            		<table class="table table-striped table-bordered">
+	                    	<thead>
+	                        	<tr>
+	                            	<th>序号</th>
+	                            	<th>设备类型</th>
+	                            	<th>设备编号</th>
+									<th>电量</th>
+									<th>出勤时间</th>
+									<th>地址</th>
+	                         	</tr>
+	                        </thead>
+	                        <tbody>
+	                        	<tr ng-repeat="t in workpositions">
+	<!--                                 <td>{{10*indexPage+$index+1}}</td> -->
+									<td>{{$index+1}}</td>
+	                             	<td>{{equipTypeStr}}</td>
+	                             	<td>{{equipNumber}}</td>
+									<td>{{t.bat}}</td>
+									<td>{{t.watch_date}}</td>
+									<td>{{t.address}}</td>
+	                         	</tr>
+	                        </tbody>
+	                	</table>
+	            	</div>
+	            	
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+<!-- 	                <button type="button" class="btn btn-primary">提交更改</button> -->
+	            </div>
+	        </div><!-- /.modal-content -->
+	    </div><!-- /.modal -->
+    
+</div>
+	
+</div>

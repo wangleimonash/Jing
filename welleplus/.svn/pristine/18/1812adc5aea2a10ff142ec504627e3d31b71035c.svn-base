@@ -1,0 +1,147 @@
+<div class="x_content">
+	<div class="col-xs-2 zTreeDemoBackground" ng-show="ztreeshow">
+		<ul id="tree" class="ztree" style="font-size:15px;padding-left:0px"></ul>
+	</div>
+	<div class="col-xs-10" id="mymain">
+		<div class="col-xs-12">
+		<div ng-show="showtree" class="nav toggle" style="padding-top:5px;width:35px"><a ng-click="showandhidetree()" class="menu_toggle" style="padding:0px"><i class="fa fa-angle-double-left"></i></a></div>
+		<div ng-show="!showtree" class="nav toggle" style="padding-top:5px;width:35px"><a ng-click="showandhidetree()" class="menu_toggle" style="padding:0px"><i class="fa fa-angle-double-right"></i></a></div>
+		<button type="button" class="btn btn-primary" id="addPen" ng-click="addPen()">添加围栏</button>
+		<button type="button" class="btn btn-primary" id="editPen" ng-click="editPen()">编辑围栏</button>
+		<button type="button" class="btn btn-primary" id="deletePen" ng-click="deletePen()">删除围栏</button>
+<!-- 		<button type="button" class="btn btn-warning" ng-click="remove()">取消</button> -->
+	</div>
+	<div class="clearfix"></div>
+	<div class="clearfix"></div>
+	<div class="col-xs-12" style="max-width:1119px;min-height:550px" id="mymap">
+		<div id="container"></div>
+	</div>
+	<div class="col-xs-5" id="mymapform" style="min-height:650px" ng-show = "isShow">
+		<div class="x_panel" style="text-align:center;font-size:18px;background:#f7f7f7;border:0px">
+			<b>添加围栏</b>
+			<small>当前组织<span>&nbsp;>>&nbsp;{{thisname}}</span></small>
+		</div>
+		<div class="x_content">
+			<form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" style="min-height:550px">
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">围栏名称 <span class="required">*</span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+	                  <input type="text" id="first-name" required="required" class="form-control col-md-7 col-xs-12" ng-model="fence.name">
+	                </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">报警类型 <span class="required">*</span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+                      <select class="form-control" ng-model="fence.warningType">
+                        <option value="0" ng-selected="selectnumber == 0">无报警</option>
+                        <option value="1" ng-selected="selectnumber == 1">进围栏报警</option>
+                        <option value="2" ng-selected="selectnumber == 2">出围栏报警</option>
+                        <option value="3" ng-selected="selectnumber == 3">进出围栏报警</option>
+                      </select>
+                    </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">开始时间 </span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+	                  <input type="text" id="startdate" required="required" class="form-control col-md-7 col-xs-12" ng-model="fence.startdate">
+	                </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">结束时间 </span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+	                  <input type="text" id="enddate" required="required" class="form-control col-md-7 col-xs-12" ng-model="fence.enddate">
+	                </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12">围栏是否启用</label>
+					
+	                <p class="col-md-7 col-sm-6 col-xs-12" style="padding-top:5px">
+                        	是:
+                        <input type="radio" class="flat" name="gender" id="genderM" value="1" ng-checked="radionumber == 1" required ng-model="fence.state"/> 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        	否:
+                        <input type="radio" class="flat" name="gender" id="genderF" value="0" ng-checked="radionumber == 0" ng-model="fence.state"/>
+                    </p>
+				</div>
+				<div class="form-group">
+					<div class="col-md-12 col-sm-6 col-xs-12" style="text-align:center">
+						<button style="margin-left:30px" type="button" class="btn btn-primary" ng-click="closeAddPen()">关闭</button>
+						<button style="margin-left:80px" type="button" class="btn btn-primary" ng-click="addFence()">添加</button>
+					</div>
+				</div>
+<!-- 				<div class="form-group" style="padding-left:28px;margin-top:45px"> -->
+<!-- 					<label style="color:red">提示:电子围栏目前只支持四边形</label> -->
+<!-- 				</div> -->
+			</form>
+		</div>
+	</div>
+	
+<!-- 	编辑围栏 -->
+	<div class="col-xs-5" style="min-height:650px" ng-show = "showEdit">
+		<div class="x_panel" style="text-align:center;font-size:18px;background:#f7f7f7;border:0px">
+			<b>编辑围栏</b>
+			<small>当前组织<span>&nbsp;>>&nbsp;{{thisname}}</span></small>
+		</div>
+		<div class="x_content">
+			<form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left" style="min-height:550px">
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">围栏名称 <span class="required">*</span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+	                  <input type="text" id="first-name" required="required" class="form-control col-md-7 col-xs-12" ng-model="editfence.name">
+	                </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">报警类型 <span class="required">*</span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+                      <select class="form-control" ng-model="editfence.warningType">
+                        <option value="0" ng-selected="selecteditnumber == 0">无报警</option>
+                        <option value="1" ng-selected="selecteditnumber == 1">进围栏报警</option>
+                        <option value="2" ng-selected="selecteditnumber == 2">出围栏报警</option>
+                        <option value="3" ng-selected="selecteditnumber == 3">进出围栏报警</option>
+                      </select>
+                    </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">开始时间 </span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+	                  <input type="text" id="editstartdate" required="required" class="form-control col-md-7 col-xs-12" ng-model="editfence.startdate">
+	                </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12" for="first-name">结束时间 </span>
+	                </label>
+	                <div class="col-md-7 col-sm-6 col-xs-12">
+	                  <input type="text" id="editenddate" required="required" class="form-control col-md-7 col-xs-12" ng-model="editfence.enddate">
+	                </div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-4 col-sm-3 col-xs-12">围栏是否启用</label>
+					
+	                <p class="col-md-7 col-sm-6 col-xs-12" style="padding-top:5px">
+                        	是:
+                        <input type="radio" class="flat" name="gender" id="genderM" value="1" ng-checked="radioeditnumber == 1" required ng-model="editfence.state"/> 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        	否:
+                        <input type="radio" class="flat" name="gender" id="genderF" value="0" ng-checked="radioeditnumber == 0" ng-model="editfence.state"/>
+                    </p>
+				</div>
+				<div class="form-group">
+					<div class="col-md-12 col-sm-6 col-xs-12" style="text-align:center">
+						<button type="button" class="btn btn-primary" ng-click="closeAddPen()">关闭</button>
+						<button type="button" class="btn btn-primary" ng-click="editFence()">保存</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	</div>
+	
+</div>

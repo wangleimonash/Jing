@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.ProjectDao">
+
+    <insert id="addProjectInfo" parameterType="com.welleplus.entity.Project" useGeneratedKeys="true" keyProperty="id">
+        insert into t_project(name,creatdate,address,sid) values(#{name},#{creatdate},#{address},#{sid})
+    </insert>
+    
+	<select id="getProjectInfo" parameterType="Long" resultType="com.welleplus.entity.Project">
+	    select * from t_project where sid = #{id}
+	</select>
+	
+	<select id="getProjectInfoForId" parameterType="Long" resultType="com.welleplus.entity.Project">
+	    select * from t_project where id = #{id}
+	</select>
+	
+	<select id="getProjectInfoAsMap" parameterType = "map" resultType = "com.welleplus.entity.Project">
+	    select * from t_project where id = #{id} and sid = #{sid}
+	</select>
+	
+	<update id="updateProjectName" parameterType = "com.welleplus.entity.Project">
+	    update t_project set name = #{name} where id = #{id}
+	</update>
+	
+	<delete id="deleteProjectInfo" parameterType = "Long">
+	    delete from t_project where id = #{id}
+	</delete>
+
+</mapper>

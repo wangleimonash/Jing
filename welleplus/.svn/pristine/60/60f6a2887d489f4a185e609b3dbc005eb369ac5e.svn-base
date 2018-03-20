@@ -1,0 +1,200 @@
+package com.welleplus.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.welleplus.entity.ImageInfo;
+import com.welleplus.entity.UserInfo;
+import com.welleplus.entity.UserInfoQuery;
+import com.welleplus.entity.WatchWarning;
+
+public interface UserDao {
+    List<UserInfo> getUserInfos();
+
+    int addUserInfo(UserInfo info) throws Exception;
+
+    List<UserInfo> getUserInfo(UserInfo info) throws Exception;
+
+    /**
+     * 修改用户信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    int editUser(UserInfo userInfo) throws Exception;
+
+    /**
+     * 删除用户信息
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    int delUser(Long id) throws Exception;
+
+    UserInfo getUserInfoForId(Long id) throws Exception;
+
+    /**
+     * 通过管理员id获取管理员用户信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    UserInfo getUserInfoById(UserInfo userInfo) throws Exception;
+
+    /**
+     * 通过参数获取所查询的用户信息条数
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    int getUserInfoCountByParam(UserInfo userInfo) throws Exception;
+
+    /**
+     * 通过参数获取要查询的人员信息集合
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getUserInfoMapByParam(UserInfo userInfo) throws Exception;
+
+    /**
+     * 通过参数获取要查询的人员信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    UserInfo getUserInfoByParam(UserInfo userInfo) throws Exception;
+
+    /**
+     * 获取关联安全帽设备的位置信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getLocationByEquipment(UserInfo userInfo) throws Exception;
+
+    /**
+     * 获取关联手表设备的位置信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getLocationByWatch(UserInfo userInfo) throws Exception;
+
+    /**
+     * 使用手机app设备的用户位置信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getLocationByPhone(UserInfo userInfo) throws Exception;
+
+    /**
+     * 获取关联安全帽设备的位置轨迹信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getHistoryByEquipment(UserInfo userInfo) throws Exception;
+
+    /**
+     * 获取关联安全帽设备的位置轨迹信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getHistoryByWatch(UserInfo userInfo) throws Exception;
+
+    /**
+     * 使用手机app设备的用户位置轨迹信息
+     *
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    List<UserInfo> getHistoryByPhone(UserInfo userInfo) throws Exception;
+
+    Long getCountFromRoleAndRid(Map<String, Object> map) throws Exception;
+
+    List<UserInfo> getUserInfoForRole(UserInfo info) throws Exception;
+
+    List<UserInfo> getUserInfoFromCorrelation(Map<String, Object> map) throws Exception;
+
+    List<UserInfo> getUserInfoOfRole2FromRole1(UserInfo info);
+
+    List<UserInfo> getUserInfoOfRole3FromRole1(UserInfo info);
+
+    List<UserInfo> getUserInfoOfRole4FromRole1(UserInfo info);
+
+    List<UserInfo> getUserInfoFromRole0(UserInfo info);
+
+    UserInfo getuserinfoforuniq(UserInfo info);
+
+    List<Map<String, Object>> getUserInfoCountFromRole2Id(Map<String, Object> map);
+
+    List<Map<String, Object>> getUserInfoCountFromRole1Id(Map<String, Object> map);
+
+    List<Map<String, Object>> getJournalInfoFromRole1Click1(UserInfoQuery info);
+
+    List<Map<String, Object>> getJournalInfoFromRole1Click2(UserInfoQuery info);
+
+    List<Map<String, Object>> getJournalInfoFromRole1Click3(UserInfoQuery info);
+
+    List<Map<String, Object>> getJournalInfoFromRole1Click4(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole1Click1(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole1Click2(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole1Click3(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole1Click4(UserInfoQuery info);
+
+    List<Map<String, Object>> getJournalInfoFromRole2Click2(UserInfoQuery info);
+
+    List<Map<String, Object>> getJournalInfoFromRole2Click3(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole2Click2(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole2Click3(UserInfoQuery info);
+
+    List<Map<String, Object>> getJournalInfoFromRole3Click3(UserInfoQuery info);
+
+    Long getCountJournalInfoFromRole3Click3(UserInfoQuery info);
+
+    List<ImageInfo> getImageInfo(Map<String, Object> map);
+    
+    List<UserInfo> getUserInfoByRoleAndRid(Map<String,Object> map) throws Exception;
+    List<UserInfo> getUserInfoByRoleAndRidAndInfo(Map<String,Object> map) throws Exception;
+    
+    Map<String,Object> getwatchgpsByImei(String imei) throws Exception;
+    Map<String,Object> getwatchheartByImei(String imei) throws Exception;
+    Map<String,Object> getwatchdataByImei(String imei) throws Exception;
+    Map<String,Object> getappdataByImei(String imei) throws Exception;
+    
+    Map<String,Object> getwatchwarningByImei(String imei) throws Exception;
+    
+    Map<String,Object> getwatchgpsByImeiAndDateTime(Map<String,Object> map) throws Exception;
+    
+    List<WatchWarning> getwatchwarningByDate(Map<String,Object> map) throws Exception;
+    
+    List<UserInfo> login(UserInfo info) throws Exception;
+    
+    void updateImgsrc(Map<String,Object> map) throws Exception;
+    
+    String getImgsrcById(Long id) throws Exception;
+    
+    List<UserInfo> getUserInfosByIds(Map<String,Object> map) throws Exception;
+    Long getUserInfosCountByIds(Map<String,Object> map) throws Exception;
+}

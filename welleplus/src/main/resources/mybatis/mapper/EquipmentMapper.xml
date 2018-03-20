@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.EquipmentDao">
+    <!-- 查询语句 -->
+    <select id="getEquipment" parameterType="com.welleplus.entity.Equipment" resultType="com.welleplus.entity.Equipment">
+		select
+		id,EquipmentNo,IMEI,IP,Uid,Alive,AliveTime,IntervalTime,
+		State,DateCreated,DateModified
+		from
+		t_equipment where
+		id=#{id}
+	</select>
+    <!--通过用户id查询设备信息-->
+    <select id="getEquipmentByUid" parameterType="com.welleplus.entity.Equipment" resultType="com.welleplus.entity.Equipment">
+        SELECT 		id,EquipmentNo,IMEI,IP,Uid
+        FROM t_equipment
+        WHERE
+        Uid=#{Uid}
+    </select>
+    <!--通过condition传过来的参数查询设备信息-->
+    <select id="getEquipmentByCondition" parameterType="String" resultType="com.welleplus.entity.Equipment">
+        SELECT pq.id,pq.EquipmentNo,IMEI,pq.IP,pq.Uid,pq.alive,pq.DateModified
+        FROM t_quipment pq
+        LEFT JOIN pmuser pu ON pu.id=pq.Uid
+        <where>
+            pu.UserName = #{condition} OR pq.IMEI=#{condition}
+        </where>
+    </select>
+
+    <!-- 添加设备信息 -->
+    <insert id="addEquipment" parameterType="com.welleplus.entity.Equipment" useGeneratedKeys="true"
+            keyProperty="id">
+		insert into
+		Equipment(EquipmentNo,IMEI,IP,Uid,Alive,AliveTime,IntervalTime,
+		State,DateCreated,DateModified)
+		values(#{IMEI},#{IMEI},#{IP},#{Uid},#{Alive},#{AliveTime},#{IntervalTime},#{
+		State},NOW(),#{DateModified})
+	</insert>
+    <!-- 通过Uid修改信息 -->
+    <update id="editEquipment" parameterType="com.welleplus.entity.Equipment">
+		update
+		Equipment
+		set
+		IMEI=#{IMEI},DateModified=now(),alive=#{Alive}
+		where Uid = #{Uid}
+	</update>
+    <!--通过uid修改uid-->
+    <update id="editEquipmentByUid" parameterType="com.welleplus.entity.Equipment">
+        UPDATE
+        Equipment
+        SET
+        EquipmentNo=#{EquipmentNo}
+        WHERE
+        Uid=#{Uid}
+    </update>
+    <!-- 删除语句 -->
+    <delete id="delEquipment" parameterType="com.welleplus.entity.Equipment">
+		delete from
+		Equipment where
+		Uid= #{Uid}
+	</delete>
+    <!-- 获取所有设备信息 -->
+<!--     <select id="getAllEquipment" resultType="com.welleplus.entity.Equipment" parameterType="userAdmin"> -->
+<!-- 		/*select -->
+<!-- 		id,EquipmentNo,IMEI,IP,Uid,Alive,AliveTime,IntervalTime, -->
+<!-- 		State,DateCreated,DateModified -->
+<!-- 		from Pmequipment*/ -->
+<!--         SELECT -->
+<!--         pm.id,pm.IMEI -->
+<!--         FROM equipment pm -->
+<!--         RIGHT JOIN t_user_admin ua ON pm.id = ua.pmequipment_id -->
+<!--         <trim prefix="WHERE" prefixOverrides="AND | OR"> -->
+<!--             <if test="adminId != null and adminId != ''"> -->
+<!--                 and ua.admin_id = #{adminId} -->
+<!--             </if> -->
+<!--         </trim> -->
+<!-- 	</select> -->
+    <!--通过imei修改设备的uid-->
+    <update id="editEquipmentByIMEI" parameterType="map">
+		UPDATE
+		t_equipment
+		SET
+		Uid= #{id}
+		WHERE IMEI = #{IMEI}
+	</update>
+    <!--获取历史轨迹-->
+    <select id="getHistory" parameterType="com.welleplus.entity.Equipment" resultType="map">
+        SELECT mwd.id,xloc,yloc,watch_date,eq.IMEI,mwd.address,phonenumber,userName,
+        case mwd.is_position
+        when 'V' then '基站'
+        when 'A' then 'GPS'
+        else '未知'
+        end is_position
+        /*pmuser.id
+        ,pmuser.UserName,pmequipment.IMEI,pmequipment.uid,map_watch_data_act.id,map_watch_data_act.IMEI,map_watch_data_act.bat,map_watch_data_act.xloc,map_watch_data_act.yloc,map_watch_data_act.address,map_watch_data_act.create_date,map_watch_data_act.watch_date,map_watch_data_act.is_position*/
+        FROM t_equipment eq
+        LEFT JOIN t_user u ON u.id = eq.uid
+        LEFT JOIN map_watch_data_act mwd ON eq.IMEI = mwd.IMEI
+        <where>
+            <!--<if test="condition != null and condition != ''">-->
+            (u.userName = #{param} OR eq.IMEI=#{param})
+            <!--</if>-->
+            <if test="startdate != null and startdate!=''">
+                <![CDATA[and mwd.watch_date>=#{startdate}]]>
+            </if>
+            <if test="enddate != null and enddate !=''">
+                <![CDATA[and mwd.watch_date<=#{enddate}]]>
+            </if>
+        </where>
+        order by watch_date desc
+    </select>
+    <!--获取员工，设备及设备位置信息-->
+    <select id="getLocation" parameterType="com.welleplus.entity.Equipment" resultType="map">
+        SELECT mwd.id,xloc,yloc,watch_date,eq.IMEI,mwd.address,phonenumber,userName,
+        case mwd.is_position
+        when 'V' then '基站'
+        when 'A' then 'GPS'
+        else '未知'
+        end is_position
+        /*pmuser.id
+        ,pmuser.UserName,pmequipment.IMEI,pmequipment.uid,map_watch_data_act.id,map_watch_data_act.IMEI,map_watch_data_act.bat,map_watch_data_act.xloc,map_watch_data_act.yloc,map_watch_data_act.address,map_watch_data_act.create_date,map_watch_data_act.watch_date,map_watch_data_act.is_position*/
+        FROM t_equipment eq
+        LEFT JOIN t_user u ON u.id = eq.uid
+        LEFT JOIN map_watch_data_act mwd ON eq.IMEI = mwd.IMEI
+        <where>
+            <!--<if test="condition != null and condition != ''">-->
+            (u.userName = #{param} OR eq.IMEI=#{param})
+            <!--</if>-->
+                <!--<if test="map.end != null and map.end !=''">-->
+                    <!--<![CDATA[and mwd.watch_date<=#{map.end}]]>-->
+                <!--</if>-->
+        </where>
+
+    </select>
+</mapper>

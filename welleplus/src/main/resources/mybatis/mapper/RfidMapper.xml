@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace的值就是dao接口的完整路径，就这个demo而言namespace 就是UserMapper.java的完整路径 -->
+<mapper namespace="com.welleplus.dao.RfidDao">
+	<!-- 查询所有用户和对应RFID信息语句  -->
+	<select id="getInfos" resultType="map">
+		select phonenumber,name,equipnumber,equipstate,equiptype
+		,epc,pc,DATE_FORMAT(r.creatdate,'%Y-%m-%d %H:%i:%s') as creattime,rssi
+		from (select phonenumber,name,equipnumber,equipstate,equiptype from t_user
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.npe != null and param.npe != ''">
+				name = #{param.npe} or phonenumber=#{param.npe} 
+				or equipnumber=#{param.npe}
+			</if>
+		</trim>) As u,
+		(select pc,epc,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as creatdate 
+		,rssi from t_rfidinfo 
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.start != null and param.start != ''">
+				AND creatdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND creatdate &lt;= #{param.end}
+			</if>
+		</trim>
+		 ) As r
+		where u.equiptype=3 and u.equipnumber = r.epc
+		order by creattime desc
+	</select>
+	<!-- 查询所有用户和对应最近的RFID信息语句 -->
+	<select id="getMaxInfos" resultType="map">
+		select phonenumber,name,equipnumber,equipstate,equiptype
+		,epc,pc,DATE_FORMAT(r.creatdate,'%Y-%m-%d %H:%i:%s') as creattime,rssi
+		from t_user As u,(select
+		s.PC,s.EPC,s.Rssi,DATE_FORMAT(s.creatdate,'%Y-%m-%d %H:%i:%s') as
+		creatdate from
+		(select
+		t.id,t.PC,t.EPC,t.Rssi,t.creatdate from
+		t_rfidinfo t,(select max(id)
+		id,max(creatdate) creatdate from
+		t_rfidinfo group by
+		EPC) tt
+		where
+		tt.id=t.id) s
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.start != null and param.start != ''">
+				AND s.creatdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND s.creatdate &lt;= #{param.end}
+			</if>
+		</trim>
+		) As r
+		where u.equiptype=3 and u.equipnumber = r.epc
+		order by creattime desc
+	</select>
+
+	<!-- 查询用户和对应RFID信息语句 -->
+	<select id="getRfidInfo" resultType="map">
+		select phonenumber,name,equipnumber,equipstate,equiptype
+		,epc,pc,DATE_FORMAT(r.creatdate,'%Y-%m-%d %H:%i:%s') as creattime,rssi
+		from (select distinct
+		t_user.phonenumber,t_user.name,
+		t_user.equipnumber,t_user.equipstate,t_user.equiptype
+		from t_user,t_firm,t_company,t_section,t_project
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.id != null and param.id != ''">
+		t_firm.id=#{param.id} and t_user.rid=t_firm.id and t_user.role=1
+		or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+		t_user.rid=t_company.id and
+		t_user.role=2 or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+		t_section.cid=t_company.id and t_user.rid=t_section.id and
+		t_user.role=3 or
+		t_firm.id=#{param.id} and t_company.fid=t_firm.id and t_section.cid=t_company.id and
+		t_project.sid=t_section.id and t_user.rid=t_project.id and
+		t_user.role=4
+		</if>
+		<if test="param.npe != null and param.npe != ''">
+				and (t_user.name = #{param.npe} or t_user.phonenumber=#{param.npe} 
+				or t_user.equipnumber=#{param.npe})
+		</if>
+		</trim>
+		)
+		As u,(select pc,epc,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as creatdate 
+		,rssi from t_rfidinfo 
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.start != null and param.start != ''">
+				AND creatdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND creatdate &lt;= #{param.end}
+			</if>
+		</trim>
+		 ) As r
+		where u.equiptype=3 and u.equipnumber = r.epc
+		order by creattime desc
+	</select>
+
+	<select id="getMaxRfidInfo" resultType="map">
+		select phonenumber,name,equipnumber,equipstate,equiptype
+		,epc,pc,DATE_FORMAT(r.creatdate,'%Y-%m-%d %H:%i:%s') as creattime,rssi
+		from (select distinct
+		t_user.phonenumber,t_user.name,
+		t_user.equipnumber,t_user.equipstate,t_user.equiptype
+		from t_user,t_firm,t_company,t_section,t_project
+		where t_firm.id=#{param.id} and t_user.rid=t_firm.id and t_user.role=1
+		or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+		t_user.rid=t_company.id and
+		t_user.role=2 or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+		t_section.cid=t_company.id and t_user.rid=t_section.id and
+		t_user.role=3 or
+		t_firm.id=#{param.id} and t_company.fid=t_firm.id and t_section.cid=t_company.id and
+		t_project.sid=t_section.id and t_user.rid=t_project.id and
+		t_user.role=4
+		)
+		As u,(select s.PC,s.EPC,s.Rssi,DATE_FORMAT(s.creatdate,'%Y-%m-%d
+		%H:%i:%s') as creatdate from
+		(select
+		t.id,t.PC,t.EPC,t.Rssi,t.creatdate
+		from
+		t_rfidinfo t,(select max(id)
+		id,max(creatdate) creatdate from
+		t_rfidinfo group by
+		EPC) tt
+		where
+		tt.id=t.id) s
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.start != null and param.start != ''">
+				AND s.creatdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND s.creatdate &lt;= #{param.end}
+			</if>
+		</trim>
+		) As r
+		where u.equiptype=3 and u.equipnumber = r.epc
+		order by creattime desc
+		
+	</select>
+	<!-- 获取公司信息  -->
+	<select id="getfirm" parameterType="map" resultType="long">
+		select distinct t_company.fid from t_company,t_section
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.role ==2">
+				AND t_company.id=#{param.rid}
+			</if>
+			<if test="param.role ==3">
+				AND t_section.id=#{param.rid} and t_company.id=t_section.cid
+			</if>
+		</trim>
+	</select>
+
+	<!-- 获取不重复数量  地图显示数量-->
+	<select id="getCount" resultType="int">
+		select count(distinct epc)
+		from (select distinct t_user.equipnumber,t_user.equiptype
+		from t_user,t_firm,t_company,t_section,t_project
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.id != null and param.start != ''">
+				and t_firm.id=#{param.id} and t_user.rid=t_firm.id and t_user.role=1
+				or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+				t_user.rid=t_company.id and
+				t_user.role=2 or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+				t_section.cid=t_company.id and t_user.rid=t_section.id and
+				t_user.role=3 or
+				t_firm.id=#{param.id} and t_company.fid=t_firm.id and t_section.cid=t_company.id and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4
+			</if>
+		</trim>
+		)
+		As u,(select pc,epc,DATE_FORMAT(creatdate,'%Y-%m-%d %H:%i:%s') as creatdate 
+		,rssi from t_rfidinfo 
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.start != null and param.start != ''">
+				AND creatdate &gt;= #{param.start}
+			</if>
+			<if test="param.end != null and param.end != ''">
+				AND creatdate &lt;= #{param.end}
+			</if>
+		</trim>
+		 ) As r
+		where u.equiptype=3 and u.equipnumber = r.epc
+	</select>
+	
+	<!-- 查询用户和对应RFID信息语句  用于查询-->
+	<select id="getUserRfidInfo" resultType="map">
+		select distinct phonenumber,name,equipnumber,equipstate,equiptype
+		from (select distinct
+		t_user.phonenumber,t_user.name,
+		t_user.equipnumber,t_user.equipstate,t_user.equiptype
+		from t_user,t_firm,t_company,t_section,t_project
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test="param.id != null and param.start != ''">
+				and t_firm.id=#{param.id} and t_user.rid=t_firm.id and t_user.role=1
+				or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+				t_user.rid=t_company.id and
+				t_user.role=2 or t_firm.id=#{param.id} and t_company.fid=t_firm.id and
+				t_section.cid=t_company.id and t_user.rid=t_section.id and
+				t_user.role=3 or
+				t_firm.id=#{param.id} and t_company.fid=t_firm.id and t_section.cid=t_company.id and
+				t_project.sid=t_section.id and t_user.rid=t_project.id and
+				t_user.role=4
+			</if>
+		</trim>
+		)
+		As u,(select epc from t_rfidinfo 
+		) As r
+		where u.equiptype=3 and u.equipnumber = r.epc
+	</select>
+
+</mapper>

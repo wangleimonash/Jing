@@ -1,0 +1,21 @@
+<div ng-controller="userlocationCtrl">
+    <div class="col-md-12 col-sm-6 col-xs-12" style="padding:0px">
+        <div class="x_panel" style="padding-right:0px">
+            <div class="x_content" style="padding:0px;min-height:565px">
+
+                <div class="col-sm-2 zTreeDemoBackground" style="left:-10px">
+                    <ul id="tree" class="ztree" style="font-size:15px;padding-left:0px"></ul>
+                    <ul style="font-size:15px;padding-left:0px;margin-top:75px">
+                    	<li style="list-style-type:none;margin-top:5px"><img style="width:20px" src="images/hat.png"><b>: 安全帽定位</b></li>
+                    	<li style="list-style-type:none;margin-top:5px"><img style="width:20px" src="images/app.png"><b>: app定位</b></li>
+                    	<li style="list-style-type:none;margin-top:5px"><img style="width:20px" src="images/watch.png"><b>: 手表定位</b></li>
+                    </ul>
+                </div>
+                <div class="col-sm-10" style="left:20px;padding:0px;min-height:560px;margin-top:-15px">
+                	<div id="container" style="width:103%"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
